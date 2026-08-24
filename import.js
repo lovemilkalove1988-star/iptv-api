@@ -1,34 +1,39 @@
+const fs = require("fs");
 const db = require("./database");
 
-const channels = [
-  {
-    name: "Первый канал",
-    url: "http://example.com/1.m3u8",
-    category: "Россия"
-  },
-  {
-    name: "Россия 1",
-    url: "http://example.com/2.m3u8",
-    category: "Россия"
-  }
-];
+const file = "ru.kz.m3u";
 
-async function importChannels() {
-  try {
-    for (const ch of channels) {
-      await db.query(
-        "INSERT INTO channels (name, url, category) VALUES ($1, $2, $3)",
-        [ch.name, ch.url, ch.category]
-      );
+async function importM3U() {
+  const data = fs.readFileSync(file, "utf8");
+
+  const lines = data.split("\n");
+
+  let name = "";
+  let url = "";
+  let category = "";
+
+  for (const line of lines) {
+    if (line.startsWith("#EXTINF")) {
+      name = line.split(",").pop().trim();
+
+      const group = line.match(/group-title="([^"]+)"/);
+      category = group ? group[1] : "Other";
     }
 
-    console.log("Channels imported");
-    process.exit();
+    if (line.startsWith("http")) {
+      url = line.trim();
 
-  } catch (error) {
-    console.error(error);
-    process.exit(1);
+      await db.query(
+        "INSERT INTO channels (name, url, category) VALUES ($1,$2,$3)",
+        [name, url, category]
+      );
+
+      console.log("Added:", name);
+    }
   }
+
+  console.log("Import finished");
+  process.exit();
 }
 
-importChannels();
+importM3U();
