@@ -36,6 +36,14 @@
 <input id="search" placeholder="Поиск канала..." style="width:100%;padding:10px;font-size:16px;">
 <br><br>
   
+<div <video id="player" controls style="width:100%; max-width:700px; background:#000;"></video>
+
+<br><br>
+
+<video id="player" controls style="width:100%; max-width:700px; background:#000;"></video>
+
+<br><br>
+
 <div id="list">Загрузка...</div>
 
 <script>
@@ -57,6 +65,7 @@ fetch("/api/channels")
     });
 
   });
+
 </script>
 
 </body>
