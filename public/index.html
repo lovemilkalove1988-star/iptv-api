@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <title>IPTV Channels</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
   <style>
     body {
       background: #111;
@@ -15,11 +18,23 @@
       color: #00ff99;
     }
 
+    video {
+      width: 100%;
+      max-width: 700px;
+      background: black;
+      border-radius: 10px;
+    }
+
     .channel {
       background: #222;
-      padding: 10px;
+      padding: 12px;
       margin: 8px 0;
       border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .channel:hover {
+      background: #333;
     }
 
     .category {
@@ -33,38 +48,64 @@
 
 <h1>IPTV Channels</h1>
 
-<input id="search" placeholder="Поиск канала..." style="width:100%;padding:10px;font-size:16px;">
-<br><br>
-  
-<div <video id="player" controls style="width:100%; max-width:700px; background:#000;"></video>
+<video id="player" controls></video>
 
-<br><br>
-
-<video id="player" controls style="width:100%; max-width:700px; background:#000;"></video>
-
-<br><br>
+<h2>Каналы</h2>
 
 <div id="list">Загрузка...</div>
 
 <script>
+
+let channels = [];
+
+const player = document.getElementById("player");
+
+function playChannel(url) {
+
+  if (Hls.isSupported()) {
+
+    const hls = new Hls();
+    hls.loadSource(url);
+    hls.attachMedia(player);
+
+  } else {
+
+    player.src = url;
+
+  }
+
+  player.play();
+
+}
+
+
 fetch("/api/channels")
-  .then(res => res.json())
-  .then(channels => {
+.then(res => res.json())
+.then(data => {
 
-    const list = document.getElementById("list");
+  channels = data;
 
-    list.innerHTML = "";
+  const list = document.getElementById("list");
 
-    channels.forEach(ch => {
-      list.innerHTML += `
-        <div class="channel">
-          <b>${ch.name}</b>
-          <div class="category">${ch.category}</div>
+  list.innerHTML = "";
+
+  channels.forEach(ch => {
+
+    list.innerHTML += `
+      <div class="channel" onclick="playChannel('${ch.url}')">
+
+        <b>${ch.name}</b>
+
+        <div class="category">
+          ${ch.category}
         </div>
-      `;
-    });
+
+      </div>
+    `;
 
   });
+
+});
 
 </script>
 
