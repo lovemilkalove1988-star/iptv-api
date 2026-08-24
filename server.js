@@ -95,6 +95,21 @@ app.get("/channels", async (req, res) => {
   }
 });
 
+app.get("/api/categories", async (req, res) => {
+  try {
+    const result = await db.query(
+      "SELECT category, COUNT(*) FROM channels GROUP BY category ORDER BY category"
+    );
+
+    res.json(result.rows);
+
+  } catch (error) {
+    res.status(500).json({
+      error: error.message
+    });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`IPTV API running on port ${PORT}`);
 });
