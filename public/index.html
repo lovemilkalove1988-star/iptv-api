@@ -98,9 +98,40 @@ fetch("/api/channels")
 
   channels = data;
 
+  showChannels(channels);
+
+document.getElementById("search").oninput = function() {
+
+  const text = this.value.toLowerCase();
+
+  const filtered = channels.filter(ch =>
+    ch.name.toLowerCase().includes(text)
+  );
+
+  showChannels(filtered);
+
+};
+
   document.getElementById("count").innerText = channels.length;
 
   const list = document.getElementById("list");
+
+  function showChannels(items) {
+
+  list.innerHTML = "";
+
+  items.forEach(ch => {
+
+    list.innerHTML += `
+      <div class="channel" onclick="playChannel('${ch.url}')">
+        <b>${ch.name}</b>
+        <div class="category">${ch.category}</div>
+      </div>
+    `;
+
+  });
+
+  }
 
   list.innerHTML = "";
 
