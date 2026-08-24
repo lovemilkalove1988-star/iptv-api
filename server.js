@@ -50,6 +50,7 @@ app.get("/api/channels", async (req, res) => {
 app.get("/channels", async (req, res) => {
   try {
     const result = await db.query("SELECT * FROM channels ORDER BY id");
+
     let html = `
     <html>
     <head>
@@ -89,7 +90,7 @@ app.get("/channels", async (req, res) => {
 
     res.send(html);
 
-  } catch(error) {
+  } catch (error) {
     res.status(500).send(error.message);
   }
 });
