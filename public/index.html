@@ -55,7 +55,7 @@
 
 <video id="player" controls></video>
 
-<h2>Каналы</h2>
+<ю<h2>Каналы (<span id="count">0</span>)</h2>
 
 <div id="list">Загрузка...</div>
 
@@ -89,6 +89,8 @@ fetch("/api/channels")
 .then(data => {
 
   channels = data;
+
+  document.getElementById("count").innerText = channels.length;
 
   const list = document.getElementById("list");
 
