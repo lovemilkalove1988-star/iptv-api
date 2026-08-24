@@ -21,6 +21,21 @@ app.get("/api/test", (req, res) => {
   });
 });
 
+app.get("/api/db-test", async (req, res) => {
+  try {
+    const result = await db.query("SELECT NOW()");
+    res.json({
+      database: "connected",
+      time: result.rows[0]
+    });
+  } catch (error) {
+    res.status(500).json({
+      database: "error",
+      message: error.message
+    });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`IPTV API running on port ${PORT}`);
 });
