@@ -47,6 +47,53 @@ app.get("/api/channels", async (req, res) => {
   }
 });
 
+app.get("/channels", async (req, res) => {
+  try {
+    const result = await db.query("SELECT * FROM channels ORDER BY id");
+    let html = `
+    <html>
+    <head>
+    <title>IPTV</title>
+    <style>
+    body {
+      background:#111;
+      color:white;
+      font-family:Arial;
+      padding:20px;
+    }
+    .channel {
+      background:#222;
+      padding:15px;
+      margin:10px;
+      border-radius:10px;
+    }
+    </style>
+    </head>
+    <body>
+    <h1>IPTV Channels</h1>
+    `;
+
+    result.rows.forEach(ch => {
+      html += `
+      <div class="channel">
+        <h2>${ch.name}</h2>
+        <p>${ch.category}</p>
+        <video controls width="400">
+          <source src="${ch.url}" type="application/x-mpegURL">
+        </video>
+      </div>
+      `;
+    });
+
+    html += "</body></html>";
+
+    res.send(html);
+
+  } catch(error) {
+    res.status(500).send(error.message);
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`IPTV API running on port ${PORT}`);
 });
