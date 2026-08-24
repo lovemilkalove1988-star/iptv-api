@@ -1,1 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>IPTV Channels</title>
+  <style>
+    body {
+      background: #111;
+      color: white;
+      font-family: Arial;
+      padding: 20px;
+    }
 
+    h1 {
+      color: #00ff99;
+    }
+
+    .channel {
+      background: #222;
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 8px;
+    }
+
+    .category {
+      color: #aaa;
+      font-size: 14px;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>IPTV Channels</h1>
+
+<div id="list">Загрузка...</div>
+
+<script>
+fetch("/api/channels")
+  .then(res => res.json())
+  .then(channels => {
+
+    const list = document.getElementById("list");
+
+    list.innerHTML = "";
+
+    channels.forEach(ch => {
+      list.innerHTML += `
+        <div class="channel">
+          <b>${ch.name}</b>
+          <div class="category">${ch.category}</div>
+        </div>
+      `;
+    });
+
+  });
+</script>
+
+</body>
+</html>
