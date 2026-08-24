@@ -31,15 +31,20 @@ app.get("/api/db-test", async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-
-res.status(500).json({
-  error: error.message
+    res.status(500).json({
+      error: error.message
+    });
+  }
 });
 
 app.get("/api/channels", async (req, res) => {
   try {
-    const result = await db.query("SELECT * FROM channels ORDER BY id");
+    const result = await db.query(
+      "SELECT * FROM channels ORDER BY id"
+    );
+
     res.json(result.rows);
+
   } catch (error) {
     res.status(500).json({
       error: error.message
@@ -49,7 +54,9 @@ app.get("/api/channels", async (req, res) => {
 
 app.get("/channels", async (req, res) => {
   try {
-    const result = await db.query("SELECT * FROM channels ORDER BY id");
+    const result = await db.query(
+      "SELECT * FROM channels ORDER BY id"
+    );
 
     let html = `
     <html>
@@ -68,6 +75,9 @@ app.get("/channels", async (req, res) => {
       margin:10px;
       border-radius:10px;
     }
+    video {
+      max-width:100%;
+    }
     </style>
     </head>
     <body>
@@ -78,7 +88,7 @@ app.get("/channels", async (req, res) => {
       html += `
       <div class="channel">
         <h2>${ch.name}</h2>
-        <p>${ch.category}</p>
+        <p>${ch.category || ""}</p>
         <video controls width="400">
           <source src="${ch.url}" type="application/x-mpegURL">
         </video>
