@@ -31,9 +31,17 @@ async function importM3U() {
       url = line.trim();
 
       await db.query(
-        "INSERT INTO channels (name, url, category, logo) VALUES ($1,$2,$3,$4)",
-        [name, url, category, logo]
-      );
+  `
+  INSERT INTO channels (name, url, category, logo)
+  VALUES ($1,$2,$3,$4)
+  ON CONFLICT (url) 
+  DO UPDATE SET 
+    name = EXCLUDED.name,
+    category = EXCLUDED.category,
+    logo = EXCLUDED.logo
+  `,
+  [name, url, category, logo]
+);
 
       console.log("Added:", name);
     }
