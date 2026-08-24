@@ -36,6 +36,17 @@ app.get("/api/db-test", async (req, res) => {
   }
 });
 
+app.get("/api/channels", async (req, res) => {
+  try {
+    const result = await db.query("SELECT * FROM channels ORDER BY id");
+    res.json(result.rows);
+  } catch (error) {
+    res.status(500).json({
+      error: error.message
+    });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`IPTV API running on port ${PORT}`);
 });
