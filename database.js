@@ -25,7 +25,7 @@ pool.on("connect", () => {
 });
 
 pool.on("error", (err) => {
-  console.error("Database error:", err);
+  console.error("Database error:", err.message);
 });
 
 module.exports = pool;
