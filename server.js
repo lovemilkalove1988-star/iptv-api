@@ -26,6 +26,47 @@ app.use(session({
 }));
 
 
+app.get("/login", (req, res) => {
+  res.send(`
+  <html>
+  <body style="background:#111;color:white;font-family:Arial;padding:30px">
+    <h2>🔐 IPTV Login</h2>
+
+    <form method="POST" action="/login">
+      <input name="username" placeholder="Логин"><br><br>
+      <input name="password" type="password" placeholder="Пароль"><br><br>
+      <button type="submit">Войти</button>
+    </form>
+
+  </body>
+  </html>
+  `);
+});
+
+
+app.post("/login", async (req, res) => {
+  try {
+
+    const { username, password } = req.body;
+
+    const result = await db.query(
+      "SELECT * FROM users WHERE username=$1 AND password=$2",
+      [username, password]
+    );
+
+    if (result.rows.length === 0) {
+      return res.send("Неверный логин или пароль");
+    }
+
+    req.session.user = result.rows[0];
+
+    res.redirect("/admin");
+
+  } catch(error) {
+    res.status(500).send(error.message);
+  }
+});
+
 // Проверка входа
 function auth(req, res, next) {
   if (req.session.user) {
