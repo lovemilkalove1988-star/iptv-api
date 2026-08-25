@@ -39,8 +39,6 @@ app.get("/api/db-test", async (req, res) => {
 });
 
 app.get("/api/channels", async (req, res) => {
-
-app.get("/api/channels", async (req, res) => {
   try {
     const result = await db.query(
       "SELECT * FROM channels ORDER BY id"
