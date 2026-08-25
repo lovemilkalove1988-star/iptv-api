@@ -299,6 +299,168 @@ error:error.message
 });
 
 
+// Админка - каналы
+app.get("/admin/channels", auth, async (req,res)=>{
+
+try{
+
+const result = await db.query(
+"SELECT * FROM channels ORDER BY id DESC"
+);
+
+let html = `
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Каналы</title>
+
+<style>
+body{
+background:#111;
+color:white;
+font-family:Arial;
+padding:20px;
+}
+
+input,button{
+width:100%;
+padding:12px;
+margin:5px 0;
+border-radius:8px;
+border:none;
+}
+
+button{
+background:#333;
+color:white;
+}
+
+.card{
+background:#222;
+padding:15px;
+margin:10px 0;
+border-radius:12px;
+}
+
+a{
+color:white;
+text-decoration:none;
+}
+</style>
+
+</head>
+
+<body>
+
+<h2>📺 Управление каналами</h2>
+
+
+<form method="POST" action="/admin/channels/add">
+
+<input name="name" placeholder="Название канала">
+
+<input name="url" placeholder="URL потока">
+
+<input name="category" placeholder="Категория">
+
+<button>➕ Добавить</button>
+
+</form>
+
+<hr>
+`;
+
+result.rows.forEach(ch=>{
+
+html += `
+
+<div class="card">
+
+<b>${ch.name}</b>
+<br>
+${ch.category || "Без категории"}
+<br>
+<small>${ch.url}</small>
+
+<form method="POST" action="/admin/channels/delete">
+
+<input type="hidden" name="id" value="${ch.id}">
+
+<button>🗑 Удалить</button>
+
+</form>
+
+</div>
+
+`;
+
+});
+
+
+html += `
+
+<a href="/admin">⬅ Назад</a>
+
+</body>
+</html>
+`;
+
+res.send(html);
+
+
+}catch(error){
+
+res.status(500).send(error.message);
+
+}
+
+});
+
+
+// Добавление канала
+app.post("/admin/channels/add", auth, async(req,res)=>{
+
+try{
+
+const {name,url,category}=req.body;
+
+await db.query(
+"INSERT INTO channels(name,url,category) VALUES($1,$2,$3)",
+[name,url,category]
+);
+
+res.redirect("/admin/channels");
+
+
+}catch(error){
+
+res.status(500).send(error.message);
+
+}
+
+});
+
+
+// Удаление канала
+app.post("/admin/channels/delete", auth, async(req,res)=>{
+
+try{
+
+await db.query(
+"DELETE FROM channels WHERE id=$1",
+[req.body.id]
+);
+
+res.redirect("/admin/channels");
+
+
+}catch(error){
+
+res.status(500).send(error.message);
+
+}
+
+});
 
 app.listen(PORT,()=>{
 
