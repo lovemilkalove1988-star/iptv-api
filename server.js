@@ -2,7 +2,6 @@ const express = require("express");
 const cors = require("cors");
 const session = require("express-session");
 const db = require("./database");
-const session = require("express-session");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -19,55 +18,9 @@ app.use(session({
 }));
 
 app.use(express.static("public"));
-app.use(session({
-  secret: "iptv-secret-2026",
-  resave: false,
-  saveUninitialized: false
-}));
 
 
-app.get("/login", (req, res) => {
-  res.send(`
-  <html>
-  <body style="background:#111;color:white;font-family:Arial;padding:30px">
-    <h2>🔐 IPTV Login</h2>
-
-    <form method="POST" action="/login">
-      <input name="username" placeholder="Логин"><br><br>
-      <input name="password" type="password" placeholder="Пароль"><br><br>
-      <button type="submit">Войти</button>
-    </form>
-
-  </body>
-  </html>
-  `);
-});
-
-
-app.post("/login", async (req, res) => {
-  try {
-
-    const { username, password } = req.body;
-
-    const result = await db.query(
-      "SELECT * FROM users WHERE username=$1 AND password=$2",
-      [username, password]
-    );
-
-    if (result.rows.length === 0) {
-      return res.send("Неверный логин или пароль");
-    }
-
-    req.session.user = result.rows[0];
-
-    res.redirect("/admin");
-
-  } catch(error) {
-    res.status(500).send(error.message);
-  }
-});
-
-// Проверка входа
+// Проверка авторизации
 function auth(req, res, next) {
   if (req.session.user) {
     next();
@@ -79,96 +32,106 @@ function auth(req, res, next) {
 
 // Страница входа
 app.get("/login", (req, res) => {
-  res.send(`
-  <html>
-  <body style="background:#111;color:white;font-family:Arial;padding:30px">
-  <h2>IPTV Admin Login</h2>
 
-  <form method="POST" action="/login">
-    <input name="username" placeholder="Логин"><br><br>
-    <input name="password" type="password" placeholder="Пароль"><br><br>
-    <button>Войти</button>
-  </form>
+res.send(`
+<html>
+<body style="background:#111;color:white;font-family:Arial;padding:30px">
 
-  </body>
-  </html>
-  `);
+<h2>🔐 IPTV Admin Login</h2>
+
+<form method="POST" action="/login">
+
+<input name="username" placeholder="Логин"><br><br>
+
+<input name="password" type="password" placeholder="Пароль"><br><br>
+
+<button>Войти</button>
+
+</form>
+
+</body>
+</html>
+`);
+
 });
 
 
 // Авторизация
-app.post("/login", async (req,res)=>{
+app.post("/login", async(req,res)=>{
 
-  try {
+try{
 
-    const {username,password}=req.body;
-
-    const result = await db.query(
-      "SELECT * FROM users WHERE username=$1 AND password=$2",
-      [username,password]
-    );
+const {username,password}=req.body;
 
 
-    if(result.rows.length){
-
-      req.session.user=result.rows[0];
-
-      res.redirect("/admin");
-
-    } else {
-
-      res.send("Неверный логин или пароль");
-
-    }
+const result = await db.query(
+"SELECT * FROM users WHERE username=$1 AND password=$2",
+[username,password]
+);
 
 
-  } catch(error){
+if(result.rows.length){
 
-    res.status(500).send(error.message);
+req.session.user=result.rows[0];
 
-  }
+res.redirect("/admin");
+
+}else{
+
+res.send("Неверный логин или пароль");
+
+}
+
+
+}catch(error){
+
+res.status(500).send(error.message);
+
+}
 
 });
 
 
 // Админка
 app.get("/admin", auth, (req,res)=>{
-  res.sendFile(__dirname + "/public/admin/index.html");
+
+res.sendFile(__dirname + "/public/admin/index.html");
+
 });
 
 
 // Выход
 app.get("/logout",(req,res)=>{
 
-  req.session.destroy();
+req.session.destroy();
 
-  res.redirect("/login");
+res.redirect("/login");
 
 });
 
 
 // Главная
-app.get("/", (req,res)=>{
+app.get("/",(req,res)=>{
 
-  res.json({
-    status:"online",
-    message:"IPTV API is working"
-  });
+res.json({
+status:"online",
+message:"IPTV API is working"
+});
 
 });
 
 
-// Тест
+// Тест API
 app.get("/api/test",(req,res)=>{
 
-  res.json({
-    message:"API connection successful"
-  });
+res.json({
+message:"API connection successful"
+});
 
 });
 
 
-// Проверка БД
+// Проверка базы
 app.get("/api/db-test", async(req,res)=>{
 
 try{
@@ -179,7 +142,6 @@ res.json({
 database:"connected",
 time:result.rows[0]
 });
-
 
 }catch(error){
 
@@ -192,7 +154,7 @@ error:error.message
 });
 
 
-// Клиенты
+// Создание клиентов
 app.get("/api/setup-clients", async(req,res)=>{
 
 try{
@@ -248,7 +210,7 @@ error:error.message
 });
 
 
-// Каналы HTML
+// Страница каналов
 app.get("/channels",async(req,res)=>{
 
 try{
@@ -259,9 +221,13 @@ const result=await db.query(
 
 
 let html=`
+
 <html>
+
 <head>
-<title>IPTV</title>
+
+<title>IPTV Channels</title>
+
 <style>
 
 body{
@@ -279,11 +245,13 @@ border-radius:10px;
 }
 
 </style>
+
 </head>
 
 <body>
 
-<h1>IPTV Channels</h1>
+<h1>📺 IPTV Channels</h1>
+
 `;
 
 
@@ -311,7 +279,6 @@ html+=`
 
 
 html+="</body></html>";
-
 
 res.send(html);
 
