@@ -192,6 +192,29 @@ res.status(500).json({
 
 
 
+// Клиенты
+app.get("/api/clients",auth,async(req,res)=>{
+
+try{
+
+const result = await db.query(
+"SELECT id,name,phone,login,active,created_at FROM clients ORDER BY id"
+);
+
+res.json(result.rows);
+
+}catch(error){
+
+res.status(500).json({
+error:error.message
+});
+
+}
+
+});
+
+
+
 // Каналы
 app.get("/api/channels",async(req,res)=>{
 
