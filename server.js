@@ -9,6 +9,31 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
 
+app.get("/api/setup-clients", async (req, res) => {
+  try {
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS clients (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(100) NOT NULL,
+        phone VARCHAR(30),
+        email VARCHAR(100),
+        status VARCHAR(20) DEFAULT 'active',
+        device_limit INTEGER DEFAULT 4,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    res.json({
+      status: "clients table created"
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      error: error.message
+    });
+  }
+});
+
 app.get("/admin", (req, res) => {
   res.sendFile(__dirname + "/public/admin/index.html");
 });
