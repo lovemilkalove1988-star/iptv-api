@@ -3,6 +3,7 @@ const cors = require("cors");
 const session = require("express-session");
 const db = require("./database");
 const clientsRouter = require("./routes/clients");
+const adminClientsRouter = require("./routes/admin-clients");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -32,6 +33,7 @@ function auth(req,res,next){
 
 app.use("/api/clients", auth, clientsRouter);
 
+app.use("/admin/clients", auth, adminClientsRouter);
 
 // LOGIN страница
 app.get("/login",(req,res)=>{
