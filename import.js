@@ -4,50 +4,59 @@ const db = require("./database");
 const file = "ru.kz.m3u";
 
 async function importM3U() {
+  try {
+    const data = fs.readFileSync(file, "utf8");
+    const lines = data.split("\n");
 
-  const data = fs.readFileSync(file, "utf8");
-  const lines = data.split("\n");
+    let name = "";
+    let url = "";
+    let category = "";
+    let logo = "";
 
-  let name = "";
-  let url = "";
-  let category = "";
-  let logo = "";
+    for (const line of lines) {
 
-  for (const line of lines) {
+      if (line.startsWith("#EXTINF")) {
 
-    if (line.startsWith("#EXTINF")) {
+        name = line.split(",").pop().trim();
 
-      name = line.split(",").pop().trim();
+        const group = line.match(/group-title="([^"]+)"/);
+        category = group ? group[1] : "Other";
 
-      const group = line.match(/group-title="([^"]+)"/);
-      category = group ? group[1] : "Other";
+        const logoMatch = line.match(/tvg-logo="([^"]+)"/);
+        logo = logoMatch ? logoMatch[1] : "";
+      }
 
-      const logoMatch = line.match(/tvg-logo="([^"]+)"/);
-      logo = logoMatch ? logoMatch[1] : "";
+      if (line.startsWith("http")) {
+
+        url = line.trim();
+
+        await db.query(
+          `
+          INSERT INTO channels
+          (name, url, category, logo)
+
+          VALUES
+          ($1,$2,$3,$4)
+
+          ON CONFLICT (url)
+          DO UPDATE SET
+          name = EXCLUDED.name,
+          category = EXCLUDED.category,
+          logo = EXCLUDED.logo
+          `,
+          [name, url, category, logo]
+        );
+
+        console.log("Added:", name);
+      }
     }
 
-    if (line.startsWith("http")) {
+    console.log("Import finished");
 
-      url = line.trim();
-
-      await db.query(
-  `
-  INSERT INTO channels (name, url, category, logo)
-  VALUES ($1,$2,$3,$4)
-  ON CONFLICT (url) 
-  DO UPDATE SET 
-    name = EXCLUDED.name,
-    category = EXCLUDED.category,
-    logo = EXCLUDED.logo
-  `,
-  [name, url, category, logo]
-);
-
-      console.log("Added:", name);
-    }
+  } catch (error) {
+    console.error("Import error:", error);
   }
 
-  console.log("Import finished");
   process.exit();
 }
 
