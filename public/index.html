@@ -78,6 +78,7 @@ function playChannel(url) {
   if (Hls.isSupported()) {
 
     const hls = new Hls();
+
     hls.loadSource(url);
     hls.attachMedia(player);
 
@@ -92,15 +93,65 @@ function playChannel(url) {
 }
 
 
+const list = document.getElementById("list");
+const search = document.getElementById("search");
+const count = document.getElementById("count");
+
+
+function showChannels(items) {
+
+  list.innerHTML = "";
+
+  items.forEach(ch => {
+
+    list.innerHTML += `
+      <div class="channel" onclick="playChannel('${ch.url}')">
+        <b>${ch.name}</b>
+        <div class="category">${ch.category || ""}</div>
+      </div>
+    `;
+
+  });
+
+}
+
+
 fetch("/api/channels")
-.then(res => res.json())
-.then(data => {
 
-  channels = data;
+  .then(res => {
 
-  showChannels(channels);
+    if (!res.ok) {
+      throw new Error("HTTP " + res.status);
+    }
 
-document.getElementById("search").oninput = function() {
+    return res.json();
+
+  })
+
+  .then(data => {
+
+    channels = data;
+
+    count.innerText = channels.length;
+
+    showChannels(channels);
+
+  })
+
+  .catch(error => {
+
+    console.error("Ошибка загрузки каналов:", error);
+
+    list.innerHTML = `
+      <div style="padding:20px;color:red;">
+        Ошибка загрузки каналов
+      </div>
+    `;
+
+  });
+
+
+search.oninput = function() {
 
   const text = this.value.toLowerCase();
 
@@ -112,46 +163,6 @@ document.getElementById("search").oninput = function() {
 
 };
 
-  document.getElementById("count").innerText = channels.length;
-
-  const list = document.getElementById("list");
-
-  function showChannels(items) {
-
-  list.innerHTML = "";
-
-  items.forEach(ch => {
-
-    list.innerHTML += `
-      <div class="channel" onclick="playChannel('${ch.url}')">
-        <b>${ch.name}</b>
-        <div class="category">${ch.category}</div>
-      </div>
-    `;
-
-  });
-
-  }
-
-  list.innerHTML = "";
-
-  channels.forEach(ch => {
-
-    list.innerHTML += `
-      <div class="channel" onclick="playChannel('${ch.url}')">
-
-        <b>${ch.name}</b>
-
-        <div class="category">
-          ${ch.category}
-        </div>
-
-      </div>
-    `;
-
-  });
-
-});
 
 </script>
 
