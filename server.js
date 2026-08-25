@@ -2,16 +2,15 @@ const express = require("express");
 const cors = require("cors");
 const session = require("express-session");
 const db = require("./database");
+const clientsRouter = require("./routes/clients");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-
 
 app.use(cors());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
 
 app.use(session({
   secret: "iptv-secret-2026",
@@ -19,11 +18,8 @@ app.use(session({
   saveUninitialized: false
 }));
 
-
 app.use(express.static("public"));
 
-
-// Проверка авторизации
 function auth(req,res,next){
 
   if(req.session.user){
@@ -33,6 +29,8 @@ function auth(req,res,next){
   }
 
 }
+
+app.use("/api/clients", auth, clientsRouter);
 
 
 // LOGIN страница
@@ -59,7 +57,6 @@ res.send(`
 `);
 
 });
-
 
 // Авторизация
 app.post("/login",async(req,res)=>{
@@ -166,6 +163,7 @@ error:error.message
 
 
 
+// Статус системы
 app.get("/api/system/status",auth,async(req,res)=>{
 
 try{
@@ -189,31 +187,6 @@ res.status(500).json({
 }
 
 });
-
-
-
-// Клиенты
-app.get("/api/clients",auth,async(req,res)=>{
-
-try{
-
-const result = await db.query(
-"SELECT id,name,phone,login,active,created_at FROM clients ORDER BY id"
-);
-
-res.json(result.rows);
-
-}catch(error){
-
-res.status(500).json({
-error:error.message
-});
-
-}
-
-});
-
-
 
 // Каналы
 app.get("/api/channels",async(req,res)=>{
@@ -252,7 +225,6 @@ const result=await db.query(
 let html=`
 
 <html>
-
 <head>
 
 <title>IPTV Channels</title>
@@ -276,7 +248,6 @@ border-radius:10px;
 </style>
 
 </head>
-
 
 <body>
 
@@ -333,7 +304,6 @@ const result=await db.query(
 "SELECT category,COUNT(*) FROM channels GROUP BY category ORDER BY category"
 );
 
-
 res.json(result.rows);
 
 
@@ -348,6 +318,7 @@ error:error.message
 });
 
 
+
 // Админка - каналы
 app.get("/admin/channels", auth, async (req,res)=>{
 
@@ -357,13 +328,18 @@ const result = await db.query(
 "SELECT * FROM channels ORDER BY id DESC"
 );
 
+
 let html = `
+
 <html>
 <head>
+
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
 <title>Каналы</title>
 
 <style>
+
 body{
 background:#111;
 color:white;
@@ -395,6 +371,7 @@ a{
 color:white;
 text-decoration:none;
 }
+
 </style>
 
 </head>
@@ -417,7 +394,9 @@ text-decoration:none;
 </form>
 
 <hr>
+
 `;
+
 
 result.rows.forEach(ch=>{
 
@@ -428,7 +407,9 @@ html += `
 <b>${ch.name}</b>
 <br>
 ${ch.category || "Без категории"}
+
 <br>
+
 <small>${ch.url}</small>
 
 <form method="POST" action="/admin/channels/delete">
@@ -452,6 +433,7 @@ html += `
 
 </body>
 </html>
+
 `;
 
 res.send(html);
@@ -466,6 +448,7 @@ res.status(500).send(error.message);
 });
 
 
+
 // Добавление канала
 app.post("/admin/channels/add", auth, async(req,res)=>{
 
@@ -473,10 +456,12 @@ try{
 
 const {name,url,category}=req.body;
 
+
 await db.query(
 "INSERT INTO channels(name,url,category) VALUES($1,$2,$3)",
 [name,url,category]
 );
+
 
 res.redirect("/admin/channels");
 
@@ -488,6 +473,7 @@ res.status(500).send(error.message);
 }
 
 });
+
 
 
 // Удаление канала
@@ -500,6 +486,7 @@ await db.query(
 [req.body.id]
 );
 
+
 res.redirect("/admin/channels");
 
 
@@ -510,6 +497,8 @@ res.status(500).send(error.message);
 }
 
 });
+
+
 
 app.listen(PORT,()=>{
 
