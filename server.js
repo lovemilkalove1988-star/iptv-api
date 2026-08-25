@@ -6,10 +6,12 @@ const db = require("./database");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+
 app.use(cors());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
 
 app.use(session({
   secret: "iptv-secret-2026",
@@ -17,21 +19,24 @@ app.use(session({
   saveUninitialized: false
 }));
 
+
 app.use(express.static("public"));
 
 
 // Проверка авторизации
-function auth(req, res, next) {
-  if (req.session.user) {
+function auth(req,res,next){
+
+  if(req.session.user){
     next();
-  } else {
+  }else{
     res.redirect("/login");
   }
+
 }
 
 
-// Страница входа
-app.get("/login", (req, res) => {
+// LOGIN страница
+app.get("/login",(req,res)=>{
 
 res.send(`
 <html>
@@ -57,7 +62,7 @@ res.send(`
 
 
 // Авторизация
-app.post("/login", async(req,res)=>{
+app.post("/login",async(req,res)=>{
 
 try{
 
@@ -70,17 +75,17 @@ const result = await db.query(
 );
 
 
-if(result.rows.length){
+if(result.rows.length===0){
+
+return res.send("Неверный логин или пароль");
+
+}
+
 
 req.session.user=result.rows[0];
 
+
 res.redirect("/admin");
-
-}else{
-
-res.send("Неверный логин или пароль");
-
-}
 
 
 }catch(error){
@@ -92,12 +97,14 @@ res.status(500).send(error.message);
 });
 
 
-// Админка
-app.get("/admin", auth, (req,res)=>{
 
-res.sendFile(__dirname + "/public/admin/index.html");
+// Админка
+app.get("/admin",auth,(req,res)=>{
+
+res.sendFile(__dirname+"/public/admin/index.html");
 
 });
+
 
 
 // Выход
@@ -108,6 +115,7 @@ req.session.destroy();
 res.redirect("/login");
 
 });
+
 
 
 // Главная
@@ -121,6 +129,7 @@ message:"IPTV API is working"
 });
 
 
+
 // Тест API
 app.get("/api/test",(req,res)=>{
 
@@ -131,8 +140,9 @@ message:"API connection successful"
 });
 
 
+
 // Проверка базы
-app.get("/api/db-test", async(req,res)=>{
+app.get("/api/db-test",async(req,res)=>{
 
 try{
 
@@ -143,38 +153,6 @@ database:"connected",
 time:result.rows[0]
 });
 
-}catch(error){
-
-res.status(500).json({
-error:error.message
-});
-
-}
-
-});
-
-
-// Создание клиентов
-app.get("/api/setup-clients", async(req,res)=>{
-
-try{
-
-await db.query(`
-CREATE TABLE IF NOT EXISTS clients (
-id SERIAL PRIMARY KEY,
-name VARCHAR(100) NOT NULL,
-phone VARCHAR(30),
-email VARCHAR(100),
-status VARCHAR(20) DEFAULT 'active',
-device_limit INTEGER DEFAULT 4,
-created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-)
-`);
-
-res.json({
-status:"clients table created"
-});
-
 
 }catch(error){
 
@@ -187,7 +165,8 @@ error:error.message
 });
 
 
-// Каналы API
+
+// Каналы
 app.get("/api/channels",async(req,res)=>{
 
 try{
@@ -210,7 +189,8 @@ error:error.message
 });
 
 
-// Страница каналов
+
+// HTML список каналов
 app.get("/channels",async(req,res)=>{
 
 try{
@@ -248,6 +228,7 @@ border-radius:10px;
 
 </head>
 
+
 <body>
 
 <h1>📺 IPTV Channels</h1>
@@ -280,6 +261,7 @@ html+=`
 
 html+="</body></html>";
 
+
 res.send(html);
 
 
@@ -292,14 +274,16 @@ res.status(500).send(error.message);
 });
 
 
+
 // Категории
 app.get("/api/categories",async(req,res)=>{
 
 try{
 
 const result=await db.query(
-"SELECT category, COUNT(*) FROM channels GROUP BY category ORDER BY category"
+"SELECT category,COUNT(*) FROM channels GROUP BY category ORDER BY category"
 );
+
 
 res.json(result.rows);
 
