@@ -9,10 +9,14 @@ const pool = new Pool(
         }
       }
     : {
-        host: "127.0.0.1",
-        port: 5432,
-        user: "postgres",
-        database: "postgres"
+        host: process.env.PGHOST,
+        port: process.env.PGPORT,
+        user: process.env.PGUSER,
+        password: process.env.PGPASSWORD,
+        database: process.env.PGDATABASE,
+        ssl: {
+          rejectUnauthorized: false
+        }
       }
 );
 
