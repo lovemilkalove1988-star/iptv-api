@@ -166,6 +166,32 @@ error:error.message
 
 
 
+app.get("/api/system/status",auth,async(req,res)=>{
+
+try{
+
+await db.query("SELECT NOW()");
+
+res.json({
+ api:"online",
+ database:"online",
+ time:new Date()
+});
+
+}catch(error){
+
+res.status(500).json({
+ api:"online",
+ database:"offline",
+ error:error.message
+});
+
+}
+
+});
+
+
+
 // Каналы
 app.get("/api/channels",async(req,res)=>{
 
