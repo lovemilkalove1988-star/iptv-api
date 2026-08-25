@@ -30,12 +30,15 @@ app.get("/api/db-test", async (req, res) => {
       time: result.rows[0]
     });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      error: error.message
-    });
-  }
+  console.log(error);
+
+  res.status(500).json({
+    error: error.message
+  });
+}
 });
+
+app.get("/api/channels", async (req, res) => {
 
 app.get("/api/channels", async (req, res) => {
   try {
