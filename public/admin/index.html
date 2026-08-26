@@ -1,70 +1,214 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>IPTV Manager</title>
-
 <style>
-body {
-    margin: 0;
-    background: #111;
-    color: white;
-    font-family: Arial, sans-serif;
-    padding: 20px;
+*{box-sizing:border-box}
+body{
+  margin:0;
+  min-height:100vh;
+  background:radial-gradient(circle at top,#202020 0%,#111 45%,#090909 100%);
+  color:#fff;
+  font-family:Arial,sans-serif;
+  padding:20px;
 }
-
-h1 {
-    text-align: center;
+.container{max-width:700px;margin:auto}
+.header{text-align:center;margin-bottom:25px}
+.logo{font-size:48px}
+h1{margin:0;font-size:28px}
+.subtitle{color:#888;margin-top:8px}
+.status-card,.stat,.menu-button,.logout a{
+  background:#1c1c1c;
+  border:1px solid #333;
 }
-
-.card {
-    background: #222;
-    padding: 20px;
-    margin: 15px 0;
-    border-radius: 15px;
-    font-size: 18px;
+.status-card{
+  border-radius:18px;
+  padding:20px;
+  margin-bottom:20px;
 }
-
-.button {
-    display: block;
-    background: #333;
-    padding: 15px;
-    margin: 10px 0;
-    border-radius: 12px;
-    text-decoration: none;
-    color: white;
+.status-title{font-size:18px;font-weight:bold;margin-bottom:15px}
+.status-row{
+  display:flex;
+  justify-content:space-between;
+  padding:12px 0;
+  border-bottom:1px solid #292929;
 }
+.status-row:last-child{border-bottom:none}
+.online{color:#7cff7c;font-weight:bold}
+.stats{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:12px;
+  margin-bottom:20px;
+}
+.stat{
+  border-radius:16px;
+  padding:18px;
+  text-align:center;
+}
+.stat-icon{font-size:28px;margin-bottom:8px}
+.stat-value{font-size:28px;font-weight:bold}
+.stat-title{color:#888;margin-top:5px;font-size:13px}
+.menu{display:grid;gap:12px}
+.menu-button{
+  display:flex;
+  align-items:center;
+  gap:15px;
+  padding:18px;
+  border-radius:16px;
+  color:#fff;
+  text-decoration:none;
+}
+.menu-button:hover{background:#252525}
+.menu-icon{font-size:28px;width:40px;text-align:center}
+.menu-text{flex:1}
+.menu-title{font-size:17px;font-weight:bold}
+.menu-description{color:#888;font-size:13px;margin-top:4px}
+.menu-arrow{color:#666;font-size:20px}
+.logout{margin-top:20px}
+.logout a{
+  display:block;
+  text-align:center;
+  padding:14px;
+  border-radius:12px;
+  color:#aaa;
+  text-decoration:none;
+}
+.footer{text-align:center;color:#555;font-size:12px;margin-top:25px}
 </style>
-
 </head>
-
 <body>
 
-<h1>🎛 IPTV Manager</h1>
+<div class="container">
 
-<div class="card">
-📊 Статистика
-<br><br>
-📺 Каналы: 0
-<br>
-👥 Клиенты: 0
-<br>
-🟢 Онлайн: 0
+<div class="header">
+<div class="logo">📺</div>
+<h1>IPTV Manager</h1>
+<div class="subtitle">Панель управления</div>
 </div>
 
+<div class="status-card">
+<div class="status-title">Состояние системы</div>
 
-<a class="button">📺 Управление каналами</a>
+<div class="status-row">
+<span>🖥️ API сервер</span>
+<span class="online">🟢 Онлайн</span>
+</div>
 
-<a class="button">👥 Клиенты</a>
+<div class="status-row">
+<span>🗄️ PostgreSQL</span>
+<span class="online">🟢 Подключена</span>
+</div>
 
-<a class="button">📱 Устройства</a>
+<div class="status-row">
+<span>📡 IPTV сервер</span>
+<span class="online">🟢 Работает</span>
+</div>
+</div>
 
-<a class="button">📥 Импорт плейлистов</a>
+<div class="stats">
 
-<a class="button">⚙ Настройки</a>
+<div class="stat">
+<div class="stat-icon">👥</div>
+<div class="stat-value" id="clientsCount">0</div>
+<div class="stat-title">Клиенты</div>
+</div>
 
+<div class="stat">
+<div class="stat-icon">📺</div>
+<div class="stat-value" id="channelsCount">0</div>
+<div class="stat-title">Каналы</div>
+</div>
+
+</div>
+
+<div class="menu">
+
+<a class="menu-button" href="/admin/clients">
+<div class="menu-icon">👥</div>
+<div class="menu-text">
+<div class="menu-title">Клиенты</div>
+<div class="menu-description">Добавление и управление клиентами</div>
+</div>
+<div class="menu-arrow">›</div>
+</a>
+
+<a class="menu-button" href="/admin/channels">
+<div class="menu-icon">📺</div>
+<div class="menu-text">
+<div class="menu-title">Каналы</div>
+<div class="menu-description">Управление IPTV-каналами</div>
+</div>
+<div class="menu-arrow">›</div>
+</a>
+
+<a class="menu-button" href="/channels">
+<div class="menu-icon">📡</div>
+<div class="menu-text">
+<div class="menu-title">Просмотр каналов</div>
+<div class="menu-description">Проверка IPTV-потоков</div>
+</div>
+<div class="menu-arrow">›</div>
+</a>
+
+<div class="menu-button">
+<div class="menu-icon">📱</div>
+<div class="menu-text">
+<div class="menu-title">Устройства</div>
+<div class="menu-description">Следующий этап</div>
+</div>
+</div>
+
+<div class="menu-button">
+<div class="menu-icon">📥</div>
+<div class="menu-text">
+<div class="menu-title">Импорт плейлистов</div>
+<div class="menu-description">Следующий этап</div>
+</div>
+</div>
+
+<div class="menu-button">
+<div class="menu-icon">⚙️</div>
+<div class="menu-text">
+<div class="menu-title">Настройки</div>
+<div class="menu-description">Следующий этап</div>
+</div>
+</div>
+
+</div>
+
+<div class="logout">
+<a href="/logout">🚪 Выйти</a>
+</div>
+
+<div class="footer">
+IPTV Manager • Панель администратора
+</div>
+
+</div>
+
+<script>
+async function loadStatistics(){
+  try{
+    const clientsResponse=await fetch("/api/clients");
+    if(clientsResponse.ok){
+      const clients=await clientsResponse.json();
+      document.getElementById("clientsCount").innerText=clients.length;
+    }
+
+    const channelsResponse=await fetch("/api/channels");
+    if(channelsResponse.ok){
+      const channels=await channelsResponse.json();
+      document.getElementById("channelsCount").innerText=channels.length;
+    }
+  }catch(error){
+    console.error(error);
+  }
+}
+loadStatistics();
+</script>
 
 </body>
 </html>

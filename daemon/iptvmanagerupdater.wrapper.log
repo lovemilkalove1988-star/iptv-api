@@ -1,0 +1,22 @@
+2026-08-26 01:23:55 - Starting C:\Program Files\nodejs\node.exe  --harmony C:\Users\Admin\iptv-api\node_modules\node-windows\lib\wrapper.js --file C:\Users\Admin\iptv-api\updater.js --scriptoptions= --log "IPTV Manager Updater wrapper" --grow 0.25 --wait 1 --maxrestarts 3 --abortonerror n --stopparentfirst undefined
+2026-08-26 01:23:55 - Started 5248
+2026-08-26 01:53:28 - Stopping iptvmanagerupdater.exe
+2026-08-26 01:53:28 - ProcessKill 5248
+2026-08-26 01:53:28 - Found child process: 4708 Name: conhost.exe
+2026-08-26 01:53:28 - Found child process: 5560 Name: node.exe
+2026-08-26 01:53:28 - Stopping process 4708
+2026-08-26 01:53:28 - Send SIGINT 4708
+2026-08-26 01:53:28 - SIGINT to 4708 failed - Killing as fallback
+2026-08-26 01:53:28 - Stopping process 5560
+2026-08-26 01:53:28 - Send SIGINT 5560
+2026-08-26 01:53:28 - SIGINT to 5560 failed - Killing as fallback
+2026-08-26 01:53:28 - Stopping process 5248
+2026-08-26 01:53:28 - Send SIGINT 5248
+2026-08-26 01:53:28 - SIGINT to 5248 failed - Killing as fallback
+2026-08-26 01:53:28 - Finished iptvmanagerupdater.exe
+2026-08-26 01:53:28 - Starting C:\Program Files\nodejs\node.exe  --harmony C:\Users\Admin\iptv-api\node_modules\node-windows\lib\wrapper.js --file C:\Users\Admin\iptv-api\updater.js --scriptoptions= --log "IPTV Manager Updater wrapper" --grow 0.25 --wait 1 --maxrestarts 3 --abortonerror n --stopparentfirst undefined
+2026-08-26 01:53:28 - Started 6188
+2026-08-26 02:13:01 - Starting C:\Program Files\nodejs\node.exe  --harmony C:\Users\Admin\iptv-api\node_modules\node-windows\lib\wrapper.js --file C:\Users\Admin\iptv-api\updater.js --scriptoptions= --log "IPTV Manager Updater wrapper" --grow 0.25 --wait 1 --maxrestarts 3 --abortonerror n --stopparentfirst undefined
+2026-08-26 02:13:01 - Started 3816
+2026-08-26 10:39:00 - Starting C:\Program Files\nodejs\node.exe  --harmony C:\Users\Admin\iptv-api\node_modules\node-windows\lib\wrapper.js --file C:\Users\Admin\iptv-api\updater.js --scriptoptions= --log "IPTV Manager Updater wrapper" --grow 0.25 --wait 1 --maxrestarts 3 --abortonerror n --stopparentfirst undefined
+2026-08-26 10:39:00 - Started 4144

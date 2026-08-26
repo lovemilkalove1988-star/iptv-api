@@ -1,0 +1,88 @@
+2026-08-26 00:04:28 - Starting C:\Program Files\nodejs\node.exe  --harmony C:\Users\Admin\iptv-api\node_modules\node-windows\lib\wrapper.js --file C:\Users\Admin\iptv-api\server.js --scriptoptions= --log "IPTV Manager API wrapper" --grow 0.25 --wait 1 --maxrestarts 3 --abortonerror n --stopparentfirst undefined
+2026-08-26 00:04:28 - Started 4716
+2026-08-26 00:07:22 - Stopping iptvmanagerapi.exe
+2026-08-26 00:07:22 - ProcessKill 4716
+2026-08-26 00:07:22 - Shutdown exception
+Message:Идет завершение работы системы.
+
+Stacktrace:   в System.Runtime.InteropServices.Marshal.ThrowExceptionForHRInternal(Int32 errorCode, IntPtr errorInfo)
+   в System.Management.ManagementScope.InitializeGuts(Object o)
+   в System.Management.ManagementScope.Initialize()
+   в System.Management.ManagementObjectSearcher.Initialize()
+   в System.Management.ManagementObjectSearcher.Get()
+   в winsw.WrapperService.GetChildPids(Int32 pid)
+   в winsw.WrapperService.StopProcessAndChildren(Int32 pid)
+   в winsw.WrapperService.StopIt()
+   в winsw.WrapperService.OnShutdown()
+2026-08-26 00:07:54 - Starting C:\Program Files\nodejs\node.exe  --harmony C:\Users\Admin\iptv-api\node_modules\node-windows\lib\wrapper.js --file C:\Users\Admin\iptv-api\server.js --scriptoptions= --log "IPTV Manager API wrapper" --grow 0.25 --wait 1 --maxrestarts 3 --abortonerror n --stopparentfirst undefined
+2026-08-26 00:07:54 - Started 4304
+2026-08-26 01:08:21 - Stopping iptvmanagerapi.exe
+2026-08-26 01:08:21 - ProcessKill 4304
+2026-08-26 01:08:21 - Found child process: 4360 Name: conhost.exe
+2026-08-26 01:08:21 - Found child process: 4384 Name: node.exe
+2026-08-26 01:08:21 - Stopping process 4360
+2026-08-26 01:08:21 - Send SIGINT 4360
+2026-08-26 01:08:21 - SIGINT to 4360 failed - Killing as fallback
+2026-08-26 01:08:21 - Stopping process 4384
+2026-08-26 01:08:21 - Send SIGINT 4384
+2026-08-26 01:08:21 - SIGINT to 4384 failed - Killing as fallback
+2026-08-26 01:08:21 - Stopping process 4304
+2026-08-26 01:08:21 - Send SIGINT 4304
+2026-08-26 01:08:21 - SIGINT to 4304 failed - Killing as fallback
+2026-08-26 01:08:21 - Finished iptvmanagerapi.exe
+2026-08-26 01:08:22 - Starting C:\Program Files\nodejs\node.exe  --harmony C:\Users\Admin\iptv-api\node_modules\node-windows\lib\wrapper.js --file C:\Users\Admin\iptv-api\server.js --scriptoptions= --log "IPTV Manager API wrapper" --grow 0.25 --wait 1 --maxrestarts 3 --abortonerror n --stopparentfirst undefined
+2026-08-26 01:08:22 - Started 3396
+2026-08-26 02:38:07 - Stopping iptvmanagerapi.exe
+2026-08-26 02:38:07 - ProcessKill 3396
+2026-08-26 02:38:07 - Found child process: 7596 Name: conhost.exe
+2026-08-26 02:38:07 - Found child process: 3556 Name: node.exe
+2026-08-26 02:38:07 - Stopping process 7596
+2026-08-26 02:38:07 - Send SIGINT 7596
+2026-08-26 02:38:07 - SIGINT to 7596 failed - Killing as fallback
+2026-08-26 02:38:07 - Stopping process 3556
+2026-08-26 02:38:07 - Send SIGINT 3556
+2026-08-26 02:38:07 - SIGINT to 3556 failed - Killing as fallback
+2026-08-26 02:38:07 - Stopping process 3396
+2026-08-26 02:38:07 - Send SIGINT 3396
+2026-08-26 02:38:07 - SIGINT to 3396 failed - Killing as fallback
+2026-08-26 02:38:07 - Finished iptvmanagerapi.exe
+2026-08-26 02:38:10 - Starting C:\Program Files\nodejs\node.exe  --harmony C:\Users\Admin\iptv-api\node_modules\node-windows\lib\wrapper.js --file C:\Users\Admin\iptv-api\server.js --scriptoptions= --log "IPTV Manager API wrapper" --grow 0.25 --wait 1 --maxrestarts 3 --abortonerror n --stopparentfirst undefined
+2026-08-26 02:38:10 - Started 1136
+2026-08-26 02:43:06 - Stopping iptvmanagerapi.exe
+2026-08-26 02:43:06 - ProcessKill 1136
+2026-08-26 02:43:06 - Found child process: 2220 Name: conhost.exe
+2026-08-26 02:43:06 - Found child process: 2604 Name: node.exe
+2026-08-26 02:43:06 - Stopping process 2220
+2026-08-26 02:43:06 - Send SIGINT 2220
+2026-08-26 02:43:06 - SIGINT to 2220 failed - Killing as fallback
+2026-08-26 02:43:06 - Stopping process 2604
+2026-08-26 02:43:06 - Send SIGINT 2604
+2026-08-26 02:43:06 - SIGINT to 2604 failed - Killing as fallback
+2026-08-26 02:43:06 - Stopping process 1136
+2026-08-26 02:43:06 - Send SIGINT 1136
+2026-08-26 02:43:06 - SIGINT to 1136 failed - Killing as fallback
+2026-08-26 02:43:06 - Finished iptvmanagerapi.exe
+2026-08-26 02:43:09 - Starting C:\Program Files\nodejs\node.exe  --harmony C:\Users\Admin\iptv-api\node_modules\node-windows\lib\wrapper.js --file C:\Users\Admin\iptv-api\server.js --scriptoptions= --log "IPTV Manager API wrapper" --grow 0.25 --wait 1 --maxrestarts 3 --abortonerror n --stopparentfirst undefined
+2026-08-26 02:43:09 - Started 6668
+2026-08-26 02:53:06 - Stopping iptvmanagerapi.exe
+2026-08-26 02:53:06 - ProcessKill 6668
+2026-08-26 02:53:06 - Found child process: 6032 Name: conhost.exe
+2026-08-26 02:53:06 - Found child process: 6880 Name: node.exe
+2026-08-26 02:53:06 - Stopping process 6032
+2026-08-26 02:53:06 - Send SIGINT 6032
+2026-08-26 02:53:06 - SIGINT to 6032 failed - Killing as fallback
+2026-08-26 02:53:06 - Stopping process 6880
+2026-08-26 02:53:06 - Send SIGINT 6880
+2026-08-26 02:53:06 - SIGINT to 6880 failed - Killing as fallback
+2026-08-26 02:53:06 - Stopping process 6668
+2026-08-26 02:53:06 - Send SIGINT 6668
+2026-08-26 02:53:06 - SIGINT to 6668 failed - Killing as fallback
+2026-08-26 02:53:06 - Finished iptvmanagerapi.exe
+2026-08-26 02:53:09 - Starting C:\Program Files\nodejs\node.exe  --harmony C:\Users\Admin\iptv-api\node_modules\node-windows\lib\wrapper.js --file C:\Users\Admin\iptv-api\server.js --scriptoptions= --log "IPTV Manager API wrapper" --grow 0.25 --wait 1 --maxrestarts 3 --abortonerror n --stopparentfirst undefined
+2026-08-26 02:53:09 - Started 1160
+2026-08-26 10:39:00 - Starting C:\Program Files\nodejs\node.exe  --harmony C:\Users\Admin\iptv-api\node_modules\node-windows\lib\wrapper.js --file C:\Users\Admin\iptv-api\server.js --scriptoptions= --log "IPTV Manager API wrapper" --grow 0.25 --wait 1 --maxrestarts 3 --abortonerror n --stopparentfirst undefined
+2026-08-26 10:39:00 - Started 4136
+2026-08-26 14:07:56 - Starting C:\Program Files\nodejs\node.exe  --harmony C:\Users\Admin\iptv-api\node_modules\node-windows\lib\wrapper.js --file C:\Users\Admin\iptv-api\server.js --scriptoptions= --log "IPTV Manager API wrapper" --grow 0.25 --wait 1 --maxrestarts 3 --abortonerror n --stopparentfirst undefined
+2026-08-26 14:07:56 - Started 960
+2026-08-26 14:12:44 - Starting C:\Program Files\nodejs\node.exe  --harmony C:\Users\Admin\iptv-api\node_modules\node-windows\lib\wrapper.js --file C:\Users\Admin\iptv-api\server.js --scriptoptions= --log "IPTV Manager API wrapper" --grow 0.25 --wait 1 --maxrestarts 3 --abortonerror n --stopparentfirst undefined
+2026-08-26 14:12:44 - Started 3816

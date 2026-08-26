@@ -35,28 +35,237 @@ app.use("/api/clients", auth, clientsRouter);
 
 app.use("/admin/clients", auth, adminClientsRouter);
 
+// IPTV playlist по персональному токену
+app.get("/playlist/:token.m3u", async (req, res) => {
+
+  try {
+
+    const result = await db.query(
+      "SELECT id, active FROM clients WHERE token=$1",
+      [req.params.token]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).send("Playlist not found");
+    }
+
+    if (!result.rows[0].active) {
+      return res.status(403).send("Client disabled");
+    }
+
+    const fs = require("fs");
+    const path = require("path");
+
+    const playlistPath = path.join(__dirname, "ru.kz.m3u");
+
+    if (!fs.existsSync(playlistPath)) {
+      return res.status(404).send("Playlist file not found");
+    }
+
+    res.setHeader("Content-Type", "application/vnd.apple.mpegurl");
+
+    res.sendFile(playlistPath);
+
+  } catch (error) {
+
+    console.error("PLAYLIST ERROR:", error);
+
+    res.status(500).send(error.message);
+
+  }
+
+});
+
 // LOGIN страница
-app.get("/login",(req,res)=>{
+app.get("/login", (req, res) => {
 
-res.send(`
-<html>
-<body style="background:#111;color:white;font-family:Arial;padding:30px">
+  res.send(`
+<!DOCTYPE html>
+<html lang="ru">
 
-<h2>🔐 IPTV Admin Login</h2>
+<head>
 
-<form method="POST" action="/login">
+<meta charset="UTF-8">
 
-<input name="username" placeholder="Логин"><br><br>
+<meta name="viewport"
+      content="width=device-width, initial-scale=1">
 
-<input name="password" type="password" placeholder="Пароль"><br><br>
+<title>IPTV Manager — Авторизация</title>
 
-<button>Войти</button>
+<style>
 
-</form>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background:
+    radial-gradient(circle at top, #202020 0%, #111 45%, #090909 100%);
+
+  color: #fff;
+
+  font-family: Arial, sans-serif;
+
+  padding: 20px;
+}
+
+.login-box {
+  width: 100%;
+  max-width: 380px;
+
+  background: #1c1c1c;
+
+  border: 1px solid #333;
+
+  border-radius: 18px;
+
+  padding: 30px;
+
+  box-shadow:
+    0 20px 50px rgba(0,0,0,.45);
+}
+
+.logo {
+  text-align: center;
+
+  font-size: 42px;
+
+  margin-bottom: 10px;
+}
+
+h2 {
+  text-align: center;
+
+  margin: 0 0 25px;
+
+  font-size: 24px;
+}
+
+label {
+  display: block;
+
+  margin: 12px 0 6px;
+
+  color: #bbb;
+
+  font-size: 14px;
+}
+
+input {
+  width: 100%;
+
+  padding: 14px;
+
+  border-radius: 10px;
+
+  border: 1px solid #444;
+
+  background: #111;
+
+  color: #fff;
+
+  font-size: 16px;
+
+  outline: none;
+}
+
+input:focus {
+  border-color: #666;
+}
+
+button {
+  width: 100%;
+
+  margin-top: 20px;
+
+  padding: 14px;
+
+  border: none;
+
+  border-radius: 10px;
+
+  background: #333;
+
+  color: white;
+
+  font-size: 16px;
+
+  font-weight: bold;
+
+  cursor: pointer;
+}
+
+button:hover {
+  background: #444;
+}
+
+.footer {
+  text-align: center;
+
+  margin-top: 18px;
+
+  color: #666;
+
+  font-size: 12px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="login-box">
+
+  <div class="logo">📺</div>
+
+  <h2>IPTV Manager</h2>
+
+  <form method="POST" action="/login">
+
+    <label>Логин</label>
+
+    <input
+      name="username"
+      type="text"
+      placeholder="Введите логин"
+      autocomplete="username"
+      required
+    >
+
+    <label>Пароль</label>
+
+    <input
+      name="password"
+      type="password"
+      placeholder="Введите пароль"
+      autocomplete="current-password"
+      required
+    >
+
+    <button type="submit">
+      Войти
+    </button>
+
+  </form>
+
+  <div class="footer">
+    Панель управления IPTV
+  </div>
+
+</div>
 
 </body>
+
 </html>
-`);
+  `);
 
 });
 
