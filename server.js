@@ -4,6 +4,7 @@ const session = require("express-session");
 const db = require("./database");
 const clientsRouter = require("./routes/clients");
 const adminClientsRouter = require("./routes/admin-clients");
+const clientRouter = require("./routes/client");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -13,6 +14,11 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.use((req,res,next)=>{
+  res.setHeader("Content-Type","text/html; charset=utf-8");
+  next();
+});
+
 app.use(session({
   secret: "iptv-secret-2026",
   resave: false,
@@ -21,13 +27,27 @@ app.use(session({
 
 app.use(express.static("public"));
 
-function auth(req,res,next){
+function auth(req, res, next) {
 
-  if(req.session.user){
-    next();
-  }else{
-    res.redirect("/login");
+  if (req.session.user) {
+    return next();
   }
+
+  const isAjax =
+    req.headers.accept?.includes("application/json") ||
+    req.headers["x-requested-with"] === "XMLHttpRequest";
+
+  if (isAjax) {
+
+    return res.status(401).json({
+      success: false,
+      sessionExpired: true,
+      error: "???�???????? ?�?�???�???�?�???� ???�-?�?� ???�???�?�?�?????????? ?????????�????. ?????�?�?�???????�?�, ???????????�?� ?? ???????�?�???? ???????�????????."
+    });
+
+  }
+
+  res.redirect("/login");
 
 }
 
@@ -35,7 +55,9 @@ app.use("/api/clients", auth, clientsRouter);
 
 app.use("/admin/clients", auth, adminClientsRouter);
 
-// IPTV playlist по персональному токену
+app.use("/client", clientRouter);
+
+// IPTV playlist ???? ???�?????????�?�?????????? ?�?????�????
 app.get("/playlist/:token.m3u", async (req, res) => {
 
   try {
@@ -76,8 +98,10 @@ app.get("/playlist/:token.m3u", async (req, res) => {
 
 });
 
-// LOGIN страница
+// LOGIN ???�???�?????�?�
 app.get("/login", (req, res) => {
+
+  res.setHeader("Content-Type", "text/html; charset=utf-8");
 
   res.send(`
 <!DOCTYPE html>
@@ -87,8 +111,7 @@ app.get("/login", (req, res) => {
 
 <meta charset="UTF-8">
 
-<meta name="viewport"
-      content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <title>IPTV Manager — Авторизация</title>
 
@@ -101,78 +124,52 @@ app.get("/login", (req, res) => {
 body {
   margin: 0;
   min-height: 100vh;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
-  background:
-    radial-gradient(circle at top, #202020 0%, #111 45%, #090909 100%);
-
+  background: radial-gradient(circle at top, #202020 0%, #111 45%, #090909 100%);
   color: #fff;
-
   font-family: Arial, sans-serif;
-
   padding: 20px;
 }
 
 .login-box {
   width: 100%;
   max-width: 380px;
-
   background: #1c1c1c;
-
   border: 1px solid #333;
-
   border-radius: 18px;
-
   padding: 30px;
-
-  box-shadow:
-    0 20px 50px rgba(0,0,0,.45);
+  box-shadow: 0 20px 50px rgba(0,0,0,.45);
 }
 
 .logo {
   text-align: center;
-
   font-size: 42px;
-
   margin-bottom: 10px;
 }
 
 h2 {
   text-align: center;
-
   margin: 0 0 25px;
-
   font-size: 24px;
 }
 
 label {
   display: block;
-
   margin: 12px 0 6px;
-
   color: #bbb;
-
   font-size: 14px;
 }
 
 input {
   width: 100%;
-
   padding: 14px;
-
   border-radius: 10px;
-
   border: 1px solid #444;
-
   background: #111;
-
   color: #fff;
-
   font-size: 16px;
-
   outline: none;
 }
 
@@ -182,23 +179,14 @@ input:focus {
 
 button {
   width: 100%;
-
   margin-top: 20px;
-
   padding: 14px;
-
   border: none;
-
   border-radius: 10px;
-
   background: #333;
-
   color: white;
-
   font-size: 16px;
-
   font-weight: bold;
-
   cursor: pointer;
 }
 
@@ -208,11 +196,8 @@ button:hover {
 
 .footer {
   text-align: center;
-
   margin-top: 18px;
-
   color: #666;
-
   font-size: 12px;
 }
 
@@ -268,8 +253,6 @@ button:hover {
   `);
 
 });
-
-// Авторизация
 app.post("/login",async(req,res)=>{
 
 try{
@@ -306,7 +289,7 @@ res.status(500).send(error.message);
 
 
 
-// Админка
+// ?????????????�
 app.get("/admin",auth,(req,res)=>{
 
 res.sendFile(__dirname+"/public/admin/index.html");
@@ -315,7 +298,7 @@ res.sendFile(__dirname+"/public/admin/index.html");
 
 
 
-// Выход
+// ?�?�?�????
 app.get("/logout",(req,res)=>{
 
 req.session.destroy();
@@ -326,7 +309,7 @@ res.redirect("/login");
 
 
 
-// Главная
+// ?�?�?�?????�??
 app.get("/",(req,res)=>{
 
 res.json({
@@ -338,7 +321,7 @@ message:"IPTV API is working"
 
 
 
-// Тест API
+// ???�???� API
 app.get("/api/test",(req,res)=>{
 
 res.json({
@@ -349,7 +332,7 @@ message:"API connection successful"
 
 
 
-// Проверка базы
+// ?????????�?????� ?�?�?�?�
 app.get("/api/db-test",async(req,res)=>{
 
 try{
@@ -374,7 +357,7 @@ error:error.message
 
 
 
-// Статус системы
+// ???�?�?�???? ???????�?�???�
 app.get("/api/system/status",auth,async(req,res)=>{
 
 try{
@@ -399,7 +382,7 @@ res.status(500).json({
 
 });
 
-// Каналы
+// ???�???�?�?�
 app.get("/api/channels",async(req,res)=>{
 
 try{
@@ -423,37 +406,69 @@ error:error.message
 
 
 
-// HTML список каналов
-app.get("/channels",async(req,res)=>{
+// HTML ???????????? ???�???�?�????
+app.get("/channels", async (req,res) => {
 
-try{
+  try {
 
-const result=await db.query(
-"SELECT * FROM channels ORDER BY id"
-);
+    const result = await db.query(
+      "SELECT * FROM channels ORDER BY id"
+    );
 
+    let html = `
 
-let html=`
+<!DOCTYPE html>
+<html lang="ru">
 
-<html>
 <head>
 
-<title>IPTV Channels</title>
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1">
+
+<title>Просмотр каналов</title>
 
 <style>
 
-body{
-background:#111;
-color:white;
-font-family:Arial;
-padding:20px;
+body {
+  margin:0;
+  background:#111;
+  color:white;
+  font-family:Arial,sans-serif;
+  padding:20px;
 }
 
-.channel{
-background:#222;
-padding:15px;
-margin:10px;
-border-radius:10px;
+.container {
+  max-width:900px;
+  margin:auto;
+}
+
+h1 {
+  margin-bottom:20px;
+}
+
+.channel {
+  background:#222;
+  padding:15px;
+  margin:10px 0;
+  border-radius:10px;
+}
+
+.channel h2 {
+  margin-top:0;
+}
+
+video {
+  width:100%;
+  max-width:600px;
+  border-radius:8px;
+  background:#000;
+}
+
+.category {
+  color:#aaa;
+  margin-bottom:10px;
 }
 
 </style>
@@ -462,24 +477,29 @@ border-radius:10px;
 
 <body>
 
-<h1>📺 IPTV Channels</h1>
+<div class="container">
+
+<h1>📺 Просмотр каналов</h1>
 
 `;
 
+    result.rows.forEach(ch => {
 
-result.rows.forEach(ch=>{
-
-html+=`
+      html += `
 
 <div class="channel">
 
 <h2>${ch.name}</h2>
 
-<p>${ch.category || ""}</p>
+<div class="category">
+${ch.category || "Без категории"}
+</div>
 
-<video controls width="400">
+<video controls>
 
 <source src="${ch.url}" type="application/x-mpegURL">
+
+Ваш браузер не поддерживает воспроизведение этого потока.
 
 </video>
 
@@ -487,26 +507,33 @@ html+=`
 
 `;
 
+    });
+
+    html += `
+
+</div>
+
+</body>
+
+</html>
+
+`;
+
+    res.setHeader(
+      "Content-Type",
+      "text/html; charset=utf-8"
+    );
+
+    res.send(html);
+
+  } catch(error) {
+
+    res.status(500).send(error.message);
+
+  }
+
 });
 
-
-html+="</body></html>";
-
-
-res.send(html);
-
-
-}catch(error){
-
-res.status(500).send(error.message);
-
-}
-
-});
-
-
-
-// Категории
 app.get("/api/categories",async(req,res)=>{
 
 try{
@@ -530,57 +557,90 @@ error:error.message
 
 
 
-// Админка - каналы
-app.get("/admin/channels", auth, async (req,res)=>{
+// ?????????????� - ???�???�?�?�
+app.get("/admin/channels", auth, async (req,res) => {
 
-try{
+  try {
 
-const result = await db.query(
-"SELECT * FROM channels ORDER BY id DESC"
-);
+    const result = await db.query(
+      "SELECT * FROM channels ORDER BY id DESC"
+    );
 
+    let html = `
 
-let html = `
+<!DOCTYPE html>
+<html lang="ru">
 
-<html>
 <head>
 
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1">
 
 <title>Каналы</title>
 
 <style>
 
-body{
-background:#111;
-color:white;
-font-family:Arial;
-padding:20px;
+body {
+  background:#111;
+  color:white;
+  font-family:Arial,sans-serif;
+  padding:20px;
 }
 
-input,button{
-width:100%;
-padding:12px;
-margin:5px 0;
-border-radius:8px;
-border:none;
+.container {
+  max-width:900px;
+  margin:auto;
 }
 
-button{
-background:#333;
-color:white;
+h2 {
+  margin-bottom:20px;
 }
 
-.card{
-background:#222;
-padding:15px;
-margin:10px 0;
-border-radius:12px;
+input,button {
+  width:100%;
+  padding:12px;
+  margin:5px 0;
+  border-radius:8px;
+  border:none;
 }
 
-a{
-color:white;
-text-decoration:none;
+input {
+  background:#1c1c1c;
+  color:white;
+  border:1px solid #333;
+}
+
+button {
+  background:#333;
+  color:white;
+  cursor:pointer;
+}
+
+button:hover {
+  background:#444;
+}
+
+.card {
+  background:#222;
+  padding:15px;
+  margin:10px 0;
+  border-radius:12px;
+}
+
+a {
+  color:white;
+  text-decoration:none;
+}
+
+.back {
+  display:block;
+  margin-top:20px;
+  padding:12px;
+  text-align:center;
+  background:#1c1c1c;
+  border-radius:8px;
 }
 
 </style>
@@ -589,18 +649,32 @@ text-decoration:none;
 
 <body>
 
-<h2>📺 Управление каналами</h2>
+<div class="container">
 
+<h2>📺 Управление каналами</h2>
 
 <form method="POST" action="/admin/channels/add">
 
-<input name="name" placeholder="Название канала">
+<input
+  name="name"
+  placeholder="Название канала"
+  required
+>
 
-<input name="url" placeholder="URL потока">
+<input
+  name="url"
+  placeholder="URL потока"
+  required
+>
 
-<input name="category" placeholder="Категория">
+<input
+  name="category"
+  placeholder="Категория"
+>
 
-<button>➕ Добавить</button>
+<button type="submit">
+  ➕ Добавить
+</button>
 
 </form>
 
@@ -608,15 +682,16 @@ text-decoration:none;
 
 `;
 
+    result.rows.forEach(ch => {
 
-result.rows.forEach(ch=>{
-
-html += `
+      html += `
 
 <div class="card">
 
 <b>${ch.name}</b>
+
 <br>
+
 ${ch.category || "Без категории"}
 
 <br>
@@ -625,9 +700,15 @@ ${ch.category || "Без категории"}
 
 <form method="POST" action="/admin/channels/delete">
 
-<input type="hidden" name="id" value="${ch.id}">
+<input
+  type="hidden"
+  name="id"
+  value="${ch.id}"
+>
 
-<button>🗑 Удалить</button>
+<button type="submit">
+  🗑️ Удалить
+</button>
 
 </form>
 
@@ -635,32 +716,36 @@ ${ch.category || "Без категории"}
 
 `;
 
-});
+    });
 
+    html += `
 
-html += `
+<a class="back" href="/admin">
+  ⬅️ Назад
+</a>
 
-<a href="/admin">⬅ Назад</a>
+</div>
 
 </body>
 </html>
 
 `;
 
-res.send(html);
+    res.setHeader(
+      "Content-Type",
+      "text/html; charset=utf-8"
+    );
 
+    res.send(html);
 
-}catch(error){
+  } catch(error) {
 
-res.status(500).send(error.message);
+    res.status(500).send(error.message);
 
-}
+  }
 
 });
 
-
-
-// Добавление канала
 app.post("/admin/channels/add", auth, async(req,res)=>{
 
 try{
@@ -687,7 +772,7 @@ res.status(500).send(error.message);
 
 
 
-// Удаление канала
+// ?????�?�?�?????� ???�???�?�?�
 app.post("/admin/channels/delete", auth, async(req,res)=>{
 
 try{
@@ -716,3 +801,7 @@ app.listen(PORT,()=>{
 console.log(`IPTV API running on port ${PORT}`);
 
 });
+
+
+
+
