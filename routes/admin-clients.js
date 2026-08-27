@@ -13,198 +13,114 @@ function escapeHtml(value) {
 }
 
 
-// =====================================================
+// ===============================
 // СПИСОК КЛИЕНТОВ
-// =====================================================
+// ===============================
 
 router.get("/", async (req, res) => {
+
   try {
-    const result = await db.query(`
-      SELECT id, name, phone, login, active, token
-      FROM clients
-      ORDER BY id DESC
-    `);
+
+    const result = await db.query(
+      "SELECT id, name, phone, login, active, token FROM clients ORDER BY id DESC"
+    );
 
     let html = `
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
+
 <meta charset="UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>Клиенты IPTV</title>
+<title>Клиенты</title>
 
 <style>
+
 body {
-  margin: 0;
-  padding: 20px;
-  background: #111;
-  color: white;
-  font-family: Arial, sans-serif;
+  background:#111;
+  color:white;
+  font-family:Arial,sans-serif;
+  padding:20px;
 }
 
-.container {
-  max-width: 700px;
-  margin: auto;
-}
-
-h1 {
-  margin-top: 0;
-}
-
-button,
-input {
-  width: 100%;
-  box-sizing: border-box;
-  padding: 12px;
-  margin: 5px 0;
-  border-radius: 8px;
-  border: none;
-  font-size: 15px;
-}
-
-input {
-  background: #111;
-  color: white;
-  border: 1px solid #444;
+input,
+button {
+  width:100%;
+  padding:12px;
+  margin:5px 0;
+  border-radius:8px;
+  border:none;
+  box-sizing:border-box;
 }
 
 button {
-  background: #333;
-  color: white;
-  cursor: pointer;
+  background:#333;
+  color:white;
+  cursor:pointer;
 }
 
 button:hover {
-  background: #444;
-}
-
-button:disabled {
-  opacity: .5;
-  cursor: wait;
+  background:#444;
 }
 
 .card {
-  background: #222;
-  padding: 15px;
-  margin: 12px 0;
-  border-radius: 12px;
-  border: 1px solid #333;
-}
-
-.client-name {
-  font-size: 20px;
-  font-weight: bold;
-}
-
-.info {
-  color: #aaa;
-  margin-top: 5px;
-}
-
-.status {
-  margin-top: 12px;
-  padding: 10px;
-  border-radius: 8px;
-  background: #181818;
-}
-
-.status-active {
-  color: #7cff7c;
-}
-
-.status-blocked {
-  color: #ff7777;
+  background:#222;
+  padding:15px;
+  margin:10px 0;
+  border-radius:10px;
 }
 
 .url {
-  margin-top: 12px;
+  word-break:break-all;
+  color:#7cff7c;
 }
 
-.url input {
-  color: #7cff7c;
+.status {
+  margin-top:8px;
+  margin-bottom:8px;
 }
 
-.actions {
-  margin-top: 10px;
-}
-
-.actions a {
-  display: block;
-  width: 100%;
-  box-sizing: border-box;
-  padding: 12px;
-  margin: 5px 0;
-  border-radius: 8px;
-  background: #333;
-  color: white;
-  text-decoration: none;
-  text-align: center;
-}
-
-.add-box {
-  display: none;
-  margin-top: 15px;
-  padding: 15px;
-  background: #1c1c1c;
-  border-radius: 12px;
-  border: 1px solid #333;
-}
-
-.devices {
-  display: none;
-  margin-top: 10px;
-  padding: 12px;
-  background: #181818;
-  border-radius: 10px;
-}
-
-.device {
-  background: #222;
-  padding: 10px;
-  margin: 7px 0;
-  border-radius: 8px;
-}
-
-.device-id {
-  color: #aaa;
-  font-size: 13px;
-}
-
-.last-seen {
-  color: #777;
-  font-size: 12px;
+.status button {
+  width:auto;
+  min-width:180px;
 }
 
 .message {
-  display: none;
-  padding: 10px;
-  margin: 10px 0;
-  border-radius: 8px;
-  background: #222;
+  margin:10px 0;
+  padding:10px;
+  border-radius:8px;
+  background:#222;
+  display:none;
 }
 
-.danger {
-  background: #512020;
-}
-
-.success {
-  background: #205120;
-}
 </style>
+
 </head>
 
 <body>
 
-<div class="container">
+<h2>👥 Клиенты</h2>
 
-<h1>👥 Клиенты</h1>
-
-<button type="button" onclick="toggleAddClientForm()">
+<button
+  type="button"
+  onclick="toggleAddClientForm()"
+>
 ➕ Добавить клиента
 </button>
 
-<div id="add-client-form" class="add-box">
+<div
+  id="add-client-form"
+  style="
+    display:none;
+    margin-top:15px;
+    padding:15px;
+    background:#1c1c1c;
+    border-radius:12px;
+  "
+>
 
 <form method="POST" action="/admin/clients/add">
 
@@ -240,121 +156,146 @@ button:disabled {
 
 </div>
 
-<div id="message" class="message"></div>
-
 <hr>
+
+<div id="message" class="message"></div>
 `;
 
-    result.rows.forEach(client => {
 
-      const playlistUrl = client.token
-        ? `${req.protocol}://${req.get("host")}/playlist/${client.token}.m3u`
+    result.rows.forEach(c => {
+
+      const playlistUrl = c.token
+        ? `http://192.168.123.7:3000/playlist/${c.token}.m3u`
         : "Токен отсутствует";
 
       html += `
 
 <div
   class="card"
-  id="client-${client.id}"
+  id="client-${c.id}"
+  data-active="${c.active ? "true" : "false"}"
 >
 
-<div class="client-name">
-${escapeHtml(client.name)}
-</div>
+<b>${escapeHtml(c.name)}</b>
 
-<div class="info">
-📱 ${escapeHtml(client.phone || "Телефон не указан")}
-</div>
+<br>
 
-<div class="info">
-🔑 Логин: ${escapeHtml(client.login)}
-</div>
+📱 ${escapeHtml(c.phone)}
+
+<br>
+
+🔑 Логин: ${escapeHtml(c.login)}
 
 <div class="status">
 
-<div
-  class="status-text ${
-    client.active
-      ? "status-active"
-      : "status-blocked"
-  }"
->
+<span class="status-text">
 ${
-  client.active
+  c.active
     ? "🟢 Активен"
     : "🔴 Заблокирован"
 }
-</div>
+</span>
+
+<br>
 
 <button
   type="button"
   class="toggle-button"
-  onclick="toggleClient(${client.id})"
+  onclick="toggleClient(${c.id})"
 >
 ${
-  client.active
+  c.active
     ? "🔴 Заблокировать"
     : "🟢 Активировать"
 }
 </button>
 
-</div>
-
-<div class="actions">
-
-<a href="/admin/clients/edit/${client.id}">
+<a
+  href="/admin/clients/edit/${c.id}"
+  style="
+    display:inline-block;
+    width:auto;
+    min-width:180px;
+    padding:12px;
+    margin:5px 0;
+    border-radius:8px;
+    background:#333;
+    color:white;
+    text-decoration:none;
+    text-align:center;
+    box-sizing:border-box;
+  "
+>
 ✏️ Редактировать
 </a>
 
 <button
   type="button"
-  onclick="deleteClient(${client.id})"
+  class="delete-button"
+  onclick="deleteClient(${c.id})"
 >
 🗑️ Удалить
 </button>
 
 </div>
 
+📺 IPTV ссылка:
+
+<br>
+
+<input
+  type="text"
+  id="url-${c.id}"
+  value="${playlistUrl}"
+  readonly
+  onclick="this.select()"
+>
+
 <div style="margin-top:15px;">
 
 <button
   type="button"
-  onclick="toggleDevices(${client.id})"
+  onclick="toggleDevices(${c.id})"
 >
 📱 Устройства
 </button>
 
 <div
-  id="devices-${client.id}"
-  class="devices"
+  id="devices-${c.id}"
+  style="
+    display:none;
+    margin-top:10px;
+    padding:12px;
+    background:#181818;
+    border-radius:10px;
+  "
 >
 
 <div
-  id="device-list-${client.id}"
+  id="device-list-${c.id}"
+  style="margin-bottom:10px;"
 >
 </div>
 
-<hr>
-
-<div style="color:#aaa;margin-bottom:6px;">
+<div style="font-size:14px;color:#aaa;margin-bottom:6px;">
 Добавить устройство
 </div>
 
 <input
   type="text"
-  id="device-name-${client.id}"
+  id="device-name-${c.id}"
   placeholder="Название, например Samsung TV"
 >
 
 <input
   type="text"
-  id="device-id-${client.id}"
+  id="device-id-${c.id}"
   placeholder="ID устройства"
 >
 
 <button
   type="button"
-  onclick="addDevice(${client.id})"
+  onclick="addDevice(${c.id})"
 >
 ➕ Добавить устройство
 </button>
@@ -363,76 +304,87 @@ ${
 
 </div>
 
-<div class="url">
-
-<div style="margin-bottom:5px;">
-📺 IPTV-ссылка:
 </div>
 
-<input
-  type="text"
-  id="url-${client.id}"
-  value="${escapeHtml(playlistUrl)}"
-  readonly
-  onclick="this.select()"
->
-
-</div>
-
-</div>
 `;
+
     });
+
 
     html += `
 
-</div>
-
-<script>
 
 function escapeHtml(value) {
+
   return String(value ?? "")
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
+
 }
 
 
-// =====================================================
-// ДОБАВЛЕНИЕ КЛИЕНТА
-// =====================================================
+
+  if (form.style.display === "none") {
+
+    form.style.display = "block";
+
+  } else {
+
+    form.style.display = "none";
+
+  }
+
+}
+
+
+<script>
+
+function escapeHtml(value) {
+
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+
+}
+
 
 function toggleAddClientForm() {
 
-  const form = document.getElementById("add-client-form");
+  const form =
+    document.getElementById("add-client-form");
 
   if (!form) {
     return;
   }
 
-  form.style.display =
-    form.style.display === "block"
-      ? "none"
-      : "block";
+  if (form.style.display === "none") {
+
+    form.style.display = "block";
+
+  } else {
+
+    form.style.display = "none";
+
+  }
+
 }
 
 
-// =====================================================
-// УСТРОЙСТВА
-// =====================================================
-
 async function toggleDevices(clientId) {
 
-  const box =
-    document.getElementById("devices-" + clientId);
+  const box = document.getElementById("devices-" + clientId);
 
   if (!box) {
     return;
   }
 
-  if (box.style.display === "none" ||
-      box.style.display === "") {
+  if (box.style.display === "none") {
 
     box.style.display = "block";
 
@@ -443,15 +395,14 @@ async function toggleDevices(clientId) {
     box.style.display = "none";
 
   }
+
 }
 
 
 async function loadDevices(clientId) {
 
   const list =
-    document.getElementById(
-      "device-list-" + clientId
-    );
+    document.getElementById("device-list-" + clientId);
 
   if (!list) {
     return;
@@ -469,67 +420,65 @@ async function loadDevices(clientId) {
 
     if (!response.ok || !data.success) {
       throw new Error(
-        data.error ||
-        "Ошибка загрузки устройств"
+        data.error || "Ошибка загрузки устройств"
       );
     }
 
-    if (!data.devices ||
-        data.devices.length === 0) {
+
+    if (data.devices.length === 0) {
 
       list.innerHTML =
         '<div style="color:#888;">Устройств пока нет</div>';
 
       return;
+
     }
+
 
     list.innerHTML = "";
 
     data.devices.forEach(device => {
 
-      const item =
-        document.createElement("div");
+      const item = document.createElement("div");
 
-      item.className = "device";
-
-      const deviceName =
-        escapeHtml(
-          device.device_name ||
-          "Устройство"
-        );
-
-      const deviceId =
-        escapeHtml(
-          device.device_id ||
-          ""
-        );
-
-      const lastSeen =
-        device.last_seen
-          ? new Date(
-              device.last_seen
-            ).toLocaleString()
-          : "нет";
+      item.style.background = "#222";
+item.style.padding = "10px";
+item.style.margin = "6px 0";
+item.style.borderRadius = "8px";
 
       item.innerHTML =
-        '<div><b>Устройство</b></div>' +
-        '<div class="device-id">ID: ' +
-        deviceId +
-        '</div>' +
-        '<div class="last-seen">' +
-        'Последняя активность: ' +
-        lastSeen +
-        '</div>' +
-        '<button type="button" ' +
-        'style="margin-top:7px;" ' +
-        'onclick="deleteDevice(' +
-        device.id +
-        ',' +
-        clientId +
-        ')">' +
-        'Удалить' +
-        '</button>';
+  "<b>📱 " +
+  escapeHtml(device.device_name) +
+  "</b>" +
 
+  "<br>" +
+
+  '<span style="font-size:13px;color:#aaa;">' +
+  "ID: " +
+  escapeHtml(device.device_id) +
+  "</span>" +
+
+  "<br>" +
+
+  '<span style="font-size:12px;color:#777;">' +
+  "Последняя активность: " +
+  (
+    device.last_seen
+      ? new Date(device.last_seen).toLocaleString()
+      : "нет"
+  ) +
+  "</span>" +
+
+  "<br>" +
+
+  '<button type="button" style="margin-top:6px;" ' +
+  'onclick="deleteDevice(' +
+  device.id +
+  "," +
+  clientId +
+  ')">' +
+  "🗑 Удалить" +
+  "</button>";
 
       list.appendChild(item);
 
@@ -540,15 +489,11 @@ async function loadDevices(clientId) {
     console.error(error);
 
     list.innerHTML =
-      "❌ " + escapeHtml(error.message);
+      "❌ " + error.message;
 
   }
+
 }
-
-
-// =====================================================
-// ДОБАВИТЬ УСТРОЙСТВО
-// =====================================================
 
 async function addDevice(clientId) {
 
@@ -568,167 +513,151 @@ async function addDevice(clientId) {
   const deviceId =
     idInput.value.trim();
 
+
   if (!deviceId) {
 
-    alert(
-      "Введите ID устройства"
-    );
+    alert("Введите ID устройства");
 
     return;
+
   }
+
 
   try {
 
-    const response =
-      await fetch(
-        "/admin/clients/devices/" + clientId,
-        {
-          method: "POST",
+    const response = await fetch(
+      "/admin/clients/devices/" + clientId,
+      {
+        method:"POST",
 
-          headers: {
-            "Content-Type":
-              "application/json"
-          },
+        headers:{
+          "Content-Type":"application/json"
+        },
 
-          body: JSON.stringify({
-            device_name:
-              deviceName ||
-              "Устройство",
+        body:JSON.stringify({
+          device_name:
+            deviceName || "Устройство",
 
-            device_id:
-              deviceId
-          })
-        }
-      );
+          device_id:
+            deviceId
+        })
+
+      }
+    );
+
 
     const data =
       await response.json();
 
-    if (!response.ok ||
-        !data.success) {
+
+    if (!response.ok || !data.success) {
 
       throw new Error(
         data.error ||
         "Ошибка добавления устройства"
       );
+
     }
+
 
     nameInput.value = "";
     idInput.value = "";
 
+
     await loadDevices(clientId);
+
 
   } catch (error) {
 
     console.error(error);
 
     alert(
-      "❌ " + error.message
+      "❌ " +
+      error.message
     );
 
   }
+
 }
 
 
-// =====================================================
-// УДАЛЕНИЕ УСТРОЙСТВА
-// =====================================================
+async function deleteDevice(deviceId, clientId) {
 
-async function deleteDevice(
-  deviceId,
-  clientId
-) {
-
-  if (!confirm(
-    "Удалить это устройство?"
-  )) {
+  if (!confirm("Удалить это устройство?")) {
     return;
   }
 
+
   try {
 
-    const response =
-      await fetch(
-        "/admin/clients/devices/" + deviceId,
-        {
-          method: "DELETE"
-        }
-      );
+    const response = await fetch(
+      "/admin/clients/devices/" + deviceId,
+      {
+        method:"DELETE"
+      }
+    );
+
 
     const data =
       await response.json();
 
-    if (!response.ok ||
-        !data.success) {
+
+    if (!response.ok || !data.success) {
 
       throw new Error(
         data.error ||
         "Ошибка удаления устройства"
       );
+
     }
 
+
     await loadDevices(clientId);
+
 
   } catch (error) {
 
     console.error(error);
 
     alert(
-      "❌ " + error.message
+      "❌ " +
+      error.message
     );
 
   }
+
 }
 
 
-// =====================================================
-// УДАЛЕНИЕ КЛИЕНТА
-// =====================================================
-
 async function deleteClient(id) {
 
-  const card =
-    document.getElementById(
-      "client-" + id
-    );
+  const card = document.getElementById("client-" + id);
 
   if (!card) {
     return;
   }
 
   const clientName =
-    card.querySelector(
-      ".client-name"
-    )?.innerText ||
-    "этого клиента";
+    card.querySelector("b")?.innerText || "этого клиента";
 
-  if (!confirm(
-    "Удалить " +
-    clientName +
-    "?"
-  )) {
+  if (!confirm("Удалить " + clientName + "?")) {
     return;
   }
 
   try {
 
-    const response =
-      await fetch(
-        "/admin/clients/delete/" + id,
-        {
-          method: "DELETE"
-        }
-      );
+    const response = await fetch(
+      "/admin/clients/delete/" + id,
+      {
+        method: "DELETE"
+      }
+    );
 
-    const data =
-      await response.json();
+    const data = await response.json();
 
-    if (!response.ok ||
-        !data.success) {
-
+    if (!response.ok || !data.success) {
       throw new Error(
-        data.error ||
-        "Ошибка удаления"
+        data.error || "Ошибка удаления"
       );
     }
 
@@ -744,92 +673,64 @@ async function deleteClient(id) {
     );
 
   }
+
 }
-
-
-// =====================================================
-// АКТИВИРОВАТЬ / ЗАБЛОКИРОВАТЬ
-// =====================================================
 
 async function toggleClient(id) {
 
-  const card =
-    document.getElementById(
-      "client-" + id
-    );
+  const card = document.getElementById("client-" + id);
 
   if (!card) {
     return;
   }
 
-  const button =
-    card.querySelector(
-      ".toggle-button"
-    );
+  const button = card.querySelector(".toggle-button");
+  const statusText = card.querySelector(".status-text");
 
-  const statusText =
-    card.querySelector(
-      ".status-text"
-    );
-
-  const oldText =
-    button.innerText;
+  const oldButtonText = button.innerText;
 
   button.disabled = true;
-
-  button.innerText =
-    "⏳ Подождите...";
+  button.innerText = "⏳ Подождите...";
 
   try {
 
-    const response =
-      await fetch(
-        "/admin/clients/toggle/" + id,
-        {
-          method: "POST",
+    const response = await fetch(
+  "/admin/clients/toggle/" + id,
+  {
+    method: "POST",
+    headers: {
+      "Accept": "application/json"
+    }
+  }
+);
 
-          headers: {
-            "Accept":
-              "application/json"
-          }
-        }
-      );
+    const data = await response.json();
 
-    const data =
-      await response.json();
-
-    if (!response.ok ||
-        !data.success) {
-
+    if (!response.ok || !data.success) {
       throw new Error(
-        data.error ||
-        "Ошибка изменения статуса"
+        data.error || "Ошибка изменения статуса"
       );
     }
+
 
     if (data.active) {
 
-      statusText.innerText =
-        "🟢 Активен";
+      card.dataset.active = "true";
 
-      statusText.className =
-        "status-text status-active";
+      statusText.innerText = "🟢 Активен";
 
-      button.innerText =
-        "🔴 Заблокировать";
+      button.innerText = "🔴 Заблокировать";
 
     } else {
 
-      statusText.innerText =
-        "🔴 Заблокирован";
+      card.dataset.active = "false";
 
-      statusText.className =
-        "status-text status-blocked";
+      statusText.innerText = "🔴 Заблокирован";
 
-      button.innerText =
-        "🟢 Активировать";
+      button.innerText = "🟢 Активировать";
 
     }
+
 
     button.disabled = false;
 
@@ -837,22 +738,23 @@ async function toggleClient(id) {
 
     console.error(error);
 
-    button.innerText =
-      oldText;
+    button.innerText = oldButtonText;
 
     button.disabled = false;
 
     alert(
-      "❌ Не удалось изменить статус клиента: " +
+      "Не удалось изменить статус клиента: " +
       error.message
     );
 
   }
+
 }
 
 </script>
 
 </body>
+
 </html>
 `;
 
@@ -862,17 +764,19 @@ async function toggleClient(id) {
 
     console.error(error);
 
-    res.status(500).send(
-      "Ошибка: " + error.message
-    );
+    res.status(500).send(error.message);
 
   }
+
 });
 
 
-// =====================================================
+// ===============================
+// ДОБАВЛЕНИЕ КЛИЕНТА
+// ===============================
+// ===============================
 // РЕДАКТИРОВАНИЕ КЛИЕНТА
-// =====================================================
+// ===============================
 
 router.get("/edit/:id", async (req, res) => {
 
@@ -888,18 +792,12 @@ router.get("/edit/:id", async (req, res) => {
     );
 
     if (result.rows.length === 0) {
-
-      return res
-        .status(404)
-        .send("Клиент не найден");
-
+      return res.status(404).send("Клиент не найден");
     }
 
-    const client =
-      result.rows[0];
+    const client = result.rows[0];
 
     res.send(`
-
 <!DOCTYPE html>
 <html lang="ru">
 
@@ -907,10 +805,8 @@ router.get("/edit/:id", async (req, res) => {
 
 <meta charset="UTF-8">
 
-<meta
-  name="viewport"
-  content="width=device-width, initial-scale=1"
->
+<meta name="viewport"
+      content="width=device-width, initial-scale=1">
 
 <title>Редактирование клиента</title>
 
@@ -943,8 +839,6 @@ body {
   border-radius: 18px;
 
   padding: 25px;
-
-  box-sizing: border-box;
 }
 
 h2 {
@@ -954,16 +848,13 @@ h2 {
 
 label {
   display: block;
-
   margin-top: 12px;
   margin-bottom: 6px;
-
   color: #aaa;
 }
 
 input {
   width: 100%;
-
   padding: 13px;
 
   border-radius: 10px;
@@ -982,7 +873,6 @@ input {
 button,
 .back {
   width: 100%;
-
   display: block;
 
   padding: 13px;
@@ -1024,10 +914,8 @@ button {
 
 <h2>✏️ Редактирование клиента</h2>
 
-<form
-  method="POST"
-  action="/admin/clients/edit/${client.id}"
->
+<form method="POST"
+      action="/admin/clients/edit/${client.id}">
 
 <label>Имя</label>
 
@@ -1067,10 +955,8 @@ button {
 
 </form>
 
-<a
-  class="back"
-  href="/admin/clients"
->
+<a class="back"
+   href="/admin/clients">
 ⬅ Назад к клиентам
 </a>
 
@@ -1079,16 +965,13 @@ button {
 </body>
 
 </html>
-
 `);
 
   } catch (error) {
 
     console.error(error);
 
-    res.status(500).send(
-      error.message
-    );
+    res.status(500).send(error.message);
 
   }
 
@@ -1106,69 +989,54 @@ router.post("/edit/:id", async (req, res) => {
       password
     } = req.body;
 
-    const result =
-      await db.query(
-        `
-        UPDATE clients
-        SET
-          name = $1,
-          phone = $2,
-          login = $3,
-          password = $4
-        WHERE id = $5
-        RETURNING id
-        `,
-        [
-          name,
-          phone,
-          login,
-          password,
-          req.params.id
-        ]
-      );
+    const result = await db.query(
+      `
+      UPDATE clients
+      SET
+        name = $1,
+        phone = $2,
+        login = $3,
+        password = $4
+      WHERE id = $5
+      RETURNING id
+      `,
+      [
+        name,
+        phone,
+        login,
+        password,
+        req.params.id
+      ]
+    );
 
     if (result.rows.length === 0) {
-
-      return res
-        .status(404)
-        .send("Клиент не найден");
-
+      return res.status(404).send("Клиент не найден");
     }
 
-    res.redirect(
-      "/admin/clients"
-    );
+    res.redirect("/admin/clients");
 
   } catch (error) {
 
     console.error(error);
 
-    res.status(500).send(
-      error.message
-    );
+    res.status(500).send(error.message);
 
   }
 
 });
 
-
-// =====================================================
-// УДАЛЕНИЕ КЛИЕНТА
-// =====================================================
-
 router.delete("/delete/:id", async (req, res) => {
 
   try {
 
-    const result =
-      await db.query(
-        `
-        DELETE FROM clients
-        WHERE id = $1
-        RETURNING id
-        `,
-        [req.params.id]
-      );
+    const result = await db.query(
+      `
+      DELETE FROM clients
+      WHERE id = $1
+      RETURNING id
+      `,
+      [req.params.id]
+    );
 
     if (result.rows.length === 0) {
 
@@ -1197,11 +1065,6 @@ router.delete("/delete/:id", async (req, res) => {
 
 });
 
-
-// =====================================================
-// ДОБАВЛЕНИЕ КЛИЕНТА
-// =====================================================
-
 router.post("/add", async (req, res) => {
 
   try {
@@ -1213,24 +1076,16 @@ router.post("/add", async (req, res) => {
       password
     } = req.body;
 
+
     const token =
-      crypto
-        .randomBytes(24)
-        .toString("hex");
+      crypto.randomBytes(24).toString("hex");
+
 
     await db.query(
       `
       INSERT INTO clients
-      (
-        name,
-        phone,
-        login,
-        password,
-        token,
-        active
-      )
-      VALUES
-      ($1, $2, $3, $4, $5, true)
+      (name, phone, login, password, token, active)
+      VALUES ($1, $2, $3, $4, $5, true)
       `,
       [
         name,
@@ -1241,41 +1096,39 @@ router.post("/add", async (req, res) => {
       ]
     );
 
-    res.redirect(
-      "/admin/clients"
-    );
+
+    res.redirect("/admin/clients");
 
   } catch (error) {
 
     console.error(error);
 
-    res.status(500).send(
-      error.message
-    );
+    res.status(500).send(error.message);
 
   }
 
 });
 
 
-// =====================================================
+// ===============================
 // АКТИВИРОВАТЬ / ЗАБЛОКИРОВАТЬ
-// =====================================================
+// БЕЗ ПЕРЕЗАГРУЗКИ СТРАНИЦЫ
+// ===============================
 
 router.post("/toggle/:id", async (req, res) => {
 
   try {
 
-    const result =
-      await db.query(
-        `
-        UPDATE clients
-        SET active = NOT active
-        WHERE id = $1
-        RETURNING id, active
-        `,
-        [req.params.id]
-      );
+    const result = await db.query(
+      `
+      UPDATE clients
+      SET active = NOT active
+      WHERE id = $1
+      RETURNING id, active
+      `,
+      [req.params.id]
+    );
+
 
     if (result.rows.length === 0) {
 
@@ -1285,6 +1138,7 @@ router.post("/toggle/:id", async (req, res) => {
       });
 
     }
+
 
     res.json({
       success: true,
@@ -1305,29 +1159,23 @@ router.post("/toggle/:id", async (req, res) => {
 
 });
 
-
-// =====================================================
+// ===============================
 // УСТРОЙСТВА КЛИЕНТА
-// =====================================================
+// ===============================
 
 router.get("/devices/:clientId", async (req, res) => {
 
   try {
 
-    const result =
-      await db.query(
-        `
-        SELECT
-          id,
-          device_name,
-          device_id,
-          last_seen
-        FROM devices
-        WHERE client_id = $1
-        ORDER BY id DESC
-        `,
-        [req.params.clientId]
-      );
+    const result = await db.query(
+      `
+      SELECT id, device_name, device_id, last_seen
+      FROM devices
+      WHERE client_id = $1
+      ORDER BY id DESC
+      `,
+      [req.params.clientId]
+    );
 
     res.json({
       success: true,
@@ -1361,35 +1209,24 @@ router.post("/devices/:clientId", async (req, res) => {
 
       return res.status(400).json({
         success: false,
-        error: "ID устройства обязателен"
+        error: "device_id обязателен"
       });
 
     }
 
-    const result =
-      await db.query(
-        `
-        INSERT INTO devices
-        (
-          client_id,
-          device_name,
-          device_id
-        )
-        VALUES
-        ($1, $2, $3)
-        RETURNING
-          id,
-          client_id,
-          device_name,
-          device_id,
-          last_seen
-        `,
-        [
-          req.params.clientId,
-          device_name || "Устройство",
-          device_id
-        ]
-      );
+    const result = await db.query(
+      `
+      INSERT INTO devices
+      (client_id, device_name, device_id)
+      VALUES ($1, $2, $3)
+      RETURNING id, client_id, device_name, device_id, last_seen
+      `,
+      [
+        req.params.clientId,
+        device_name || "Устройство",
+        device_id
+      ]
+    );
 
     res.json({
       success: true,
@@ -1404,8 +1241,7 @@ router.post("/devices/:clientId", async (req, res) => {
 
       return res.status(409).json({
         success: false,
-        error:
-          "Такое устройство уже зарегистрировано"
+        error: "Такое устройство уже зарегистрировано"
       });
 
     }
@@ -1424,15 +1260,14 @@ router.delete("/devices/:id", async (req, res) => {
 
   try {
 
-    const result =
-      await db.query(
-        `
-        DELETE FROM devices
-        WHERE id = $1
-        RETURNING id
-        `,
-        [req.params.id]
-      );
+    const result = await db.query(
+      `
+      DELETE FROM devices
+      WHERE id = $1
+      RETURNING id
+      `,
+      [req.params.id]
+    );
 
     if (result.rows.length === 0) {
 
@@ -1461,6 +1296,4 @@ router.delete("/devices/:id", async (req, res) => {
 
 });
 
-
 module.exports = router;
-
