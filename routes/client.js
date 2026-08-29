@@ -529,6 +529,8 @@ router.get("/channels", async (req, res) => {
         c.name,
         c.url,
         c.logo,
+        c.milktv_rating,
+        c.milktv_manual_boost,
         COALESCE(
           ARRAY_AGG(DISTINCT m.category)
           FILTER (WHERE m.category IS NOT NULL),
@@ -542,8 +544,12 @@ router.get("/channels", async (req, res) => {
         c.id,
         c.name,
         c.url,
-        c.logo
-      ORDER BY c.id
+        c.logo,
+        c.milktv_rating,
+        c.milktv_manual_boost
+      ORDER BY
+        (COALESCE(c.milktv_rating,0) + COALESCE(c.milktv_manual_boost,0)) DESC,
+        c.name ASC
       `
     );
 

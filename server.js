@@ -294,6 +294,10 @@ res.status(500).send(error.message);
 
 
 // ?????????????�
+app.get("/admin/milktv",auth,(req,res)=>{
+  res.sendFile(__dirname+"/public/admin/milktv/index.html");
+});
+
 app.get("/admin",auth,(req,res)=>{
 
 res.sendFile(__dirname+"/public/admin/index.html");
@@ -391,9 +395,25 @@ app.get("/api/channels",async(req,res)=>{
 
 try{
 
-const result=await db.query(
-"SELECT * FROM channels ORDER BY id"
-);
+const result=await db.query(`
+SELECT
+  c.*,
+  COALESCE(
+    ARRAY_AGG(DISTINCT m.category)
+    FILTER (WHERE m.category IS NOT NULL),
+    ARRAY[]::text[]
+  ) AS milktv_categories
+FROM channels c
+LEFT JOIN milktv_channel_categories m
+  ON m.channel_id = c.id
+GROUP BY c.id
+ORDER BY
+  (
+    COALESCE(c.milktv_rating,0)
+    + COALESCE(c.milktv_manual_boost,0)
+  ) DESC,
+  c.name ASC
+`);
 
 res.json(result.rows);
 
@@ -819,188 +839,6 @@ ${escapeHtml(ch.name)}
 </a>
 
 </div>
-
-<script>
-
-let milktvProgressTimer = null;
-
-async function startMilktvCheck() {
-
-  const button = document.getElementById("milktv-check-button");
-  const progress = document.getElementById("milktv-check-progress");
-
-  if (!button || !progress) {
-    console.error("Элементы МИЛК ТВ не найдены");
-    return;
-  }
-
-  button.disabled = true;
-  button.innerText = "⏳ Запуск проверки...";
-  progress.innerText = "";
-
-  try {
-
-    const response = await fetch("/admin/milktv/check", {
-      method: "POST",
-      headers: {
-        "Accept": "application/json"
-      }
-    });
-
-    const text = await response.text();
-
-    console.log("MILKTV START STATUS:", response.status);
-    console.log("MILKTV START RESPONSE:", text);
-
-    let data;
-
-    try {
-      data = JSON.parse(text);
-    } catch {
-      throw new Error("Сервер вернул не JSON: " + text.substring(0, 200));
-    }
-
-    if (!data.success) {
-
-      button.disabled = false;
-      button.innerText = "🔄 Проверить каналы МИЛК ТВ";
-      progress.innerText =
-        data.message || "Ошибка запуска проверки";
-
-      return;
-    }
-
-    if (milktvProgressTimer) {
-      clearInterval(milktvProgressTimer);
-    }
-
-    await updateMilktvProgress();
-
-    milktvProgressTimer =
-      setInterval(updateMilktvProgress, 1000);
-
-  } catch(error) {
-
-    console.error("MILKTV START ERROR:", error);
-
-    button.disabled = false;
-    button.innerText = "🔄 Проверить каналы МИЛК ТВ";
-    progress.innerText =
-      "Ошибка запуска: " + error.message;
-
-  }
-
-}
-
-
-async function updateMilktvProgress() {
-
-  const button =
-    document.getElementById("milktv-check-button");
-
-  const progress =
-    document.getElementById("milktv-check-progress");
-
-  if (!button || !progress) {
-    return;
-  }
-
-  try {
-
-    const response =
-      await fetch("/api/admin/milktv/check-progress", {
-        headers: {
-          "Accept": "application/json"
-        }
-      });
-
-    const text = await response.text();
-
-    console.log("MILKTV PROGRESS:", text);
-
-    let data;
-
-    try {
-      data = JSON.parse(text);
-    } catch {
-      throw new Error(
-        "Сервер вернул не JSON: " +
-        text.substring(0, 200)
-      );
-    }
-
-    if (response.status === 401) {
-
-      clearInterval(milktvProgressTimer);
-      milktvProgressTimer = null;
-
-      button.disabled = false;
-      button.innerText = "🔄 Проверить каналы МИЛК ТВ";
-      progress.innerText = "Сессия авторизации истекла";
-
-      return;
-    }
-
-    if (data.running) {
-
-      button.disabled = true;
-
-      button.innerText =
-        "⏳ МИЛК ТВ: " +
-        data.current +
-        "/" +
-        data.total;
-
-      progress.innerText =
-        "🟢 ONLINE: " +
-        data.online +
-        "   🔴 OFFLINE: " +
-        data.offline;
-
-      return;
-    }
-
-    if (
-      data.total > 0 &&
-      data.current >= data.total
-    ) {
-
-      clearInterval(milktvProgressTimer);
-      milktvProgressTimer = null;
-
-      button.disabled = false;
-
-      button.innerText =
-        "✅ Проверка завершена";
-
-      progress.innerText =
-        "🟢 ONLINE: " +
-        data.online +
-        "   🔴 OFFLINE: " +
-        data.offline +
-        "   📺 ВСЕГО: " +
-        data.total;
-
-      setTimeout(() => {
-
-        button.innerText =
-          "🔄 Проверить каналы МИЛК ТВ";
-
-      }, 5000);
-
-    }
-
-  } catch(error) {
-
-    console.error("MILKTV PROGRESS ERROR:", error);
-
-    progress.innerText =
-      "Ошибка получения прогресса: " +
-      error.message;
-
-  }
-
-}
 
 </script>
 
@@ -1556,6 +1394,45 @@ app.post("/admin/channels/category", auth, async (req,res) => {
   }
 
 });
+app.post("/admin/channels/manual-boost", auth, async (req,res) => {
+
+  try {
+
+    const rawId = Array.isArray(req.body.id)
+      ? req.body.id[req.body.id.length - 1]
+      : req.body.id;
+
+    const id = Number(rawId);
+    let boost = Number(req.body.manual_boost);
+
+    if (!Number.isFinite(boost)) {
+      boost = 0;
+    }
+
+    boost = Math.max(0, Math.min(100, Math.round(boost)));
+
+    await db.query(
+      `
+      UPDATE channels
+      SET milktv_manual_boost = $1
+      WHERE id = $2
+      `,
+      [boost, id]
+    );
+
+    res.redirect("/admin/channels/" + id);
+
+  } catch (error) {
+
+    console.error("МИЛК ТВ MANUAL BOOST:", error);
+
+    res.status(500).send(error.message);
+
+  }
+
+});
+
+
 app.get("/admin/channels/:id", auth, async (req,res) => {
 
   try {
@@ -1817,9 +1694,6 @@ ${safeCategory}
 <div class="info-box">
 
 <div class="info-title">
-<div class="info-box">
-
-<div class="info-title">
 📂 Категории МИЛК ТВ
 </div>
 
@@ -1887,6 +1761,43 @@ ${safeCategory}
   type="submit"
 >
 💾 Сохранить категории
+</button>
+
+</form>
+
+<form
+  method="POST"
+  action="/admin/channels/manual-boost"
+>
+
+<input
+  type="hidden"
+  name="id"
+  value="${ch.id}"
+>
+
+<div class="info-title">
+⭐ Ручной приоритет
+</div>
+
+<div style="color:#888;font-size:13px;margin-bottom:8px;">
+Чем выше значение, тем выше канал поднимается в МИЛК ТВ.
+</div>
+
+<input
+  type="number"
+  name="manual_boost"
+  value="${Number(ch.milktv_manual_boost || 0)}"
+  min="0"
+  max="100"
+  step="1"
+  style="width:100%;padding:12px;background:#111;color:#fff;border:1px solid #333;border-radius:9px;font-size:16px;"
+>
+
+<button
+  type="submit"
+>
+⭐ Сохранить приоритет
 </button>
 
 </form>
