@@ -1,0 +1,2 @@
+const db=require('../database');const {calculateSourceTrust}=require('../services/milktv-source-trust');
+(async()=>{const q=await db.query('SELECT id,channel_id,status,successful_checks,consecutive_successful_checks,failed_checks,last_success_at FROM milktv_channel_sources ORDER BY id LIMIT 20');for(const s of q.rows){const t=calculateSourceTrust(s);console.log(`${s.id}\tchannel ${s.channel_id}\t${t.score}\t${t.level}`)}await db.end()})().catch(e=>{console.error(e.message);process.exitCode=1});

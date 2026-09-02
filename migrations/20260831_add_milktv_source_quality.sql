@@ -1,0 +1,17 @@
+ALTER TABLE milktv_channel_sources ADD COLUMN IF NOT EXISTS video_width INTEGER;
+ALTER TABLE milktv_channel_sources ADD COLUMN IF NOT EXISTS video_height INTEGER;
+ALTER TABLE milktv_channel_sources ADD COLUMN IF NOT EXISTS resolution_label TEXT;
+ALTER TABLE milktv_channel_sources ADD COLUMN IF NOT EXISTS video_codec TEXT;
+ALTER TABLE milktv_channel_sources ADD COLUMN IF NOT EXISTS video_bitrate BIGINT;
+ALTER TABLE milktv_channel_sources ADD COLUMN IF NOT EXISTS fps NUMERIC;
+ALTER TABLE milktv_channel_sources ADD COLUMN IF NOT EXISTS audio_codec TEXT;
+ALTER TABLE milktv_channel_sources ADD COLUMN IF NOT EXISTS audio_bitrate BIGINT;
+ALTER TABLE milktv_channel_sources ADD COLUMN IF NOT EXISTS audio_channels INTEGER;
+ALTER TABLE milktv_channel_sources ADD COLUMN IF NOT EXISTS has_video BOOLEAN;
+ALTER TABLE milktv_channel_sources ADD COLUMN IF NOT EXISTS has_audio BOOLEAN;
+ALTER TABLE milktv_channel_sources ADD COLUMN IF NOT EXISTS startup_time INTEGER;
+ALTER TABLE milktv_channel_sources ADD COLUMN IF NOT EXISTS measured_at TIMESTAMP WITHOUT TIME ZONE;
+ALTER TABLE milktv_channel_sources ADD COLUMN IF NOT EXISTS probe_status TEXT NOT NULL DEFAULT 'unknown';
+ALTER TABLE milktv_channel_sources ADD COLUMN IF NOT EXISTS probe_error TEXT;
+ALTER TABLE milktv_channel_sources ADD COLUMN IF NOT EXISTS quality_score NUMERIC;
+ALTER TABLE milktv_channel_sources ADD COLUMN IF NOT EXISTS quality_confidence TEXT;

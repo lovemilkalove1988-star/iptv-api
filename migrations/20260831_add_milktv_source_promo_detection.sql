@@ -1,0 +1,12 @@
+ALTER TABLE milktv_channel_sources ADD COLUMN IF NOT EXISTS promo_status TEXT NOT NULL DEFAULT 'unknown';
+ALTER TABLE milktv_channel_sources ADD COLUMN IF NOT EXISTS promo_score INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE milktv_channel_sources ADD COLUMN IF NOT EXISTS promo_confidence TEXT NOT NULL DEFAULT 'none';
+ALTER TABLE milktv_channel_sources ADD COLUMN IF NOT EXISTS promo_checked_at TIMESTAMPTZ;
+ALTER TABLE milktv_channel_sources ADD COLUMN IF NOT EXISTS promo_error TEXT;
+ALTER TABLE milktv_channel_sources ADD COLUMN IF NOT EXISTS promo_evidence JSONB NOT NULL DEFAULT '{}'::jsonb;
+ALTER TABLE milktv_channel_sources ADD COLUMN IF NOT EXISTS promo_observations INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE milktv_channel_sources ADD COLUMN IF NOT EXISTS promo_detections INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE milktv_channel_sources ADD COLUMN IF NOT EXISTS promo_last_detected_at TIMESTAMPTZ;
+DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='milktv_source_promo_status_ck') THEN ALTER TABLE milktv_channel_sources ADD CONSTRAINT milktv_source_promo_status_ck CHECK (promo_status IN ('unknown','clean','suspected','detected','error')); END IF; END $$;
+DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='milktv_source_promo_score_ck') THEN ALTER TABLE milktv_channel_sources ADD CONSTRAINT milktv_source_promo_score_ck CHECK (promo_score BETWEEN 0 AND 100); END IF; END $$;
+DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='milktv_source_promo_confidence_ck') THEN ALTER TABLE milktv_channel_sources ADD CONSTRAINT milktv_source_promo_confidence_ck CHECK (promo_confidence IN ('none','low','medium','high')); END IF; END $$;

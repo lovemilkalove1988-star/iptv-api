@@ -19,3 +19,4 @@ fix-encoding.js
 device-block.txt
 
 daemon/*.log
+.env*

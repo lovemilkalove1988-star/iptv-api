@@ -1,0 +1,2 @@
+const fs=require('fs');const db=require('../database');const {runAutopilot}=require('../services/milktv-autopilot');
+(async()=>{try{const result=await runAutopilot(db,{dryRun:true,channelIds:[351]});const report={started_at:new Date().toISOString(),global_autopilot_enabled:false,global_autoswitch_enabled:false,...result};fs.writeFileSync('autopilot-dry-run-20260831.json',JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2));}catch(e){console.error(`AUTOPILOT_DRY_RUN_FAILED: ${e.message}`);process.exitCode=1}finally{await db.end()}})();

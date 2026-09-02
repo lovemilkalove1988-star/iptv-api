@@ -1,4 +1,4 @@
-const { execFile } = require("child_process");
+﻿const { execFile } = require("child_process");
 const fs = require("fs");
 const path = require("path");
 
@@ -7,6 +7,7 @@ const LOG = path.join(PROJECT, "updater.log");
 
 const GIT = "C:\\Program Files\\Git\\cmd\\git.exe";
 const NPM = "C:\\Windows\\System32\\cmd.exe";
+const SC = "C:\\Windows\\System32\\sc.exe";
 
 function log(message) {
     const line = `[${new Date().toISOString()}] ${message}\n`;
@@ -39,7 +40,6 @@ function run(file, args) {
 
 async function check() {
     try {
-
         // Получаем актуальное состояние GitHub
         await run(
             GIT,
@@ -57,11 +57,11 @@ async function check() {
         );
 
         if (remote === local) {
-            log("No updates.");
+            log("Обновлений нет.");
             return;
         }
 
-        log(`Update found: ${local} -> ${remote}`);
+        log(`Найдено обновление: ${local} -> ${remote}`);
 
         // Обновляем проект
         await run(
@@ -69,29 +69,28 @@ async function check() {
             ["pull", "--ff-only", "origin", "main"]
         );
 
-        log("Git update completed.");
+        log("Git обновление завершено.");
 
-        // Устанавливаем зависимости
+        // Устанавливаем зависимости, если package-файлы существуют
         if (
             fs.existsSync(path.join(PROJECT, "package.json")) &&
             fs.existsSync(path.join(PROJECT, "package-lock.json"))
         ) {
-
-            log("Running npm install...");
+            log("Запускаем npm install...");
 
             await run(
                 NPM,
                 ["/c", "npm", "install", "--omit=dev"]
             );
 
-            log("npm install completed.");
+            log("npm install завершён.");
         }
 
         // Перезапускаем IPTV API
-        log("Restarting IPTV Manager API...");
+        log("Перезапускаем IPTV Manager API...");
 
         await run(
-            "C:\\Windows\\System32\\sc.exe",
+            SC,
             ["stop", "iptvmanagerapi.exe"]
         );
 
@@ -100,16 +99,14 @@ async function check() {
         );
 
         await run(
-            "C:\\Windows\\System32\\sc.exe",
+            SC,
             ["start", "iptvmanagerapi.exe"]
         );
 
-        log("IPTV Manager API restarted.");
+        log("IPTV Manager API перезапущен.");
 
     } catch (error) {
-
-        log(`UPDATE ERROR: ${error.message}`);
-
+        log(`ОШИБКА ОБНОВЛЕНИЯ: ${error.message}`);
     }
 }
 

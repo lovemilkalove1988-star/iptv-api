@@ -1,0 +1,12 @@
+[
+  {"channel_id":310,"channel":"Первый канал Европа","domain":"1tv.ru","discovery_url":"https://www.1tv.ru/live"},
+  {"channel_id":303,"channel":"НТВ HD","domain":"ntv.ru","discovery_url":"https://www.ntv.ru/air/ntv/"},
+  {"channel_id":278,"channel":"Дом Кино","domain":"domkino.tv","discovery_url":"https://domkino.tv/online"},
+  {"channel_id":378,"channel":"Муз-ТВ","domain":"muz-tv.ru","discovery_url":"https://muz-tv.ru/online/"},
+  {"channel_id":331,"channel":"ТВ3","domain":"tv3.ru","discovery_url":"https://tv3.ru/live"},
+  {"channel_id":309,"channel":"Пятый Канал","domain":"5-tv.ru","discovery_url":"https://5-tv.ru/live/"},
+  {"channel_id":351,"channel":"Jibek Joly","domain":"jibekjoly.tv","discovery_url":"https://jibekjoly.tv/live"},
+  {"channel_id":340,"channel":"31 Kanal","domain":"31channel.kz","discovery_url":"https://31channel.kz/live"},
+  {"channel_id":345,"channel":"Astana TV","domain":"astanatv.kz","discovery_url":"https://astanatv.kz/ru/live/"},
+  {"channel_id":353,"channel":"KTK","domain":"ktk.kz","discovery_url":"https://www.ktk.kz/ru/live/"}
+]

@@ -2,9 +2,10 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>IPTV Manager</title>
 <style>
+:root{--bg:#0d1422;--panel:#141e2d;--panel-2:#1a2a3d;--border:#2b3d56;--text:#f2f6fb;--muted:#9eabc0;--primary:#3d82e8;--primary-hover:#5c9cf2;--success:#63d69b;--danger:#e26d7a;--warning:#e4b45f;--shadow:0 14px 36px rgba(0,0,0,.28)}
 *{box-sizing:border-box}
 body{
   margin:0;
@@ -14,28 +15,64 @@ body{
   font-family:Arial,sans-serif;
   padding:20px;
 }
-.container{max-width:700px;margin:auto}
-.header{text-align:center;margin-bottom:25px}
-.logo{font-size:48px}
-h1{margin:0;font-size:28px}
+.container{max-width:920px;margin:auto}
+.header{
+  position:relative;
+  display:flex;
+  justify-content:center;
+  align-items:flex-start;
+  margin-bottom:14px;
+}
+
+.header-main{
+  text-align:center;
+}
+
+.logo{font-size:38px}
+
+.top-logout{
+  position:absolute;
+  right:0;
+  top:0;
+  padding:8px 11px;
+  border:1px solid #333;
+  border-radius:9px;
+  background:#1c1c1c;
+  color:#aaa;
+  text-decoration:none;
+  font-size:12px;
+}
+
+.top-logout:hover{
+  background:#252525;
+  color:#fff;
+}
+h1{margin:0;font-size:24px}
 .subtitle{color:#888;margin-top:8px}
 .status-card,.stat,.menu-button,.logout a{
   background:#1c1c1c;
   border:1px solid #333;
 }
 .status-card{
-  border-radius:18px;
-  padding:20px;
-  margin-bottom:20px;
+  border-radius:12px;
+  padding:12px;
+  margin-bottom:14px;
 }
-.status-title{font-size:18px;font-weight:bold;margin-bottom:15px}
+.status-title{font-size:14px;font-weight:bold;margin:0 0 8px;color:#cfcfcf;letter-spacing:.02em}
 .status-row{
   display:flex;
+  align-items:center;
   justify-content:space-between;
-  padding:12px 0;
-  border-bottom:1px solid #292929;
+  gap:10px;
+  min-height:34px;
+  padding:6px 9px;
+  margin:5px 0;
+  border:1px solid #292929;
+  border-radius:8px;
+  background:#151515;
+  font-size:12px;
 }
-.status-row:last-child{border-bottom:none}
+.status-row:last-child{border-bottom:1px solid #292929}
 .online{color:#7cff7c;font-weight:bold}
 .stats{
   display:grid;
@@ -51,22 +88,25 @@ h1{margin:0;font-size:28px}
 .stat-icon{font-size:28px;margin-bottom:8px}
 .stat-value{font-size:28px;font-weight:bold}
 .stat-title{color:#888;margin-top:5px;font-size:13px}
-.menu{display:grid;gap:12px}
+.menu{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-top:4px}
 .menu-button{
   display:flex;
-  align-items:center;
-  gap:15px;
-  padding:18px;
-  border-radius:16px;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:7px;
+  min-height:112px;
+  padding:13px;
+  border-radius:11px;
   color:#fff;
   text-decoration:none;
 }
 .menu-button:hover{background:#252525}
-.menu-icon{font-size:28px;width:40px;text-align:center}
+.menu-icon{font-size:24px;width:auto;text-align:left}
 .menu-text{flex:1}
-.menu-title{font-size:17px;font-weight:bold}
-.menu-description{color:#888;font-size:13px;margin-top:4px}
-.menu-arrow{color:#666;font-size:20px}
+.menu-title{font-size:15px;font-weight:bold}
+.menu-description{color:#888;font-size:12px;margin-top:3px;line-height:1.3}
+.menu-arrow{position:absolute;right:12px;top:10px;color:#666;font-size:18px}
+.menu-button{position:relative}
 .logout{margin-top:20px}
 .logout a{
   display:block;
@@ -77,16 +117,41 @@ h1{margin:0;font-size:28px}
   text-decoration:none;
 }
 .footer{text-align:center;color:#555;font-size:12px;margin-top:25px}
+@media(max-width:620px){body{padding:12px}.menu{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.menu-button{min-height:104px;padding:11px}.status-row{font-size:11px}.top-logout{right:-2px}.header{padding-top:2px}.subtitle{font-size:12px}}
+.status-card,.stat,.menu-button,.logout a{background:var(--panel);border-color:var(--border);box-shadow:var(--shadow)}
+body{background:radial-gradient(circle at top,#1a2b43 0%,var(--bg) 48%,#080d16 100%);color:var(--text)}
+.subtitle,.menu-description{color:var(--muted)}.status-row{background:var(--panel-2);border-color:var(--border)}
+.top-logout{background:var(--panel);border-color:var(--border);color:var(--muted)}.top-logout:hover{background:var(--panel-2);color:var(--text)}
+.menu-button:hover{background:var(--panel-2);border-color:var(--primary)}.online{color:var(--success)}
+@media(min-width:900px){body{padding-left:250px}.menu{position:fixed;left:16px;top:16px;bottom:16px;width:210px;display:flex;flex-direction:column;gap:7px;padding:12px;background:rgba(20,30,45,.92);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);overflow:auto}.menu-button{min-height:46px;text-align:left;padding:11px 13px}.menu-icon{font-size:18px}.menu-description{display:none}.menu-arrow{right:10px;top:13px}.container{max-width:980px}}
+.app-sidebar{display:none}.brand{font-size:18px;font-weight:700;display:flex;gap:8px;align-items:center;color:#eef5ff}.brand b{color:#4d93f4}.brand-mark{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:8px;background:linear-gradient(135deg,#3d82e8,#62d2ff);color:#06111f;font-size:13px}.sidebar-nav{display:grid;gap:6px;margin-top:30px}.sidebar-nav a{display:flex;align-items:center;gap:11px;padding:10px 11px;border-radius:8px;color:var(--muted);text-decoration:none;font-size:13px}.sidebar-nav a.active,.sidebar-nav a:hover{background:var(--primary);color:#fff}.sidebar-user{margin-top:auto;display:flex;align-items:center;gap:9px;padding-top:20px;color:#dce7f7;font-size:12px}.sidebar-user small{display:block;color:var(--muted);margin-top:2px;font-size:10px}.avatar{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:#5a8ed5;color:#fff;font-weight:bold}
+@media(min-width:900px){.app-sidebar{position:fixed;z-index:5;inset:16px auto 16px 16px;width:148px;display:flex;flex-direction:column;padding:16px 10px;background:rgba(10,19,32,.94);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow)}.menu{display:none}.container{max-width:980px;padding-top:4px}}
+@media(max-width:899px){.app-sidebar{display:none}}
 </style>
 </head>
 <body>
 
+<aside class="app-sidebar" aria-label="Основная навигация">
+  <div class="brand"><span class="brand-mark">▶</span><span>MILK <b>TV</b></span></div>
+  <nav class="sidebar-nav">
+    <a class="active" href="/admin">⌂ <span>Главная</span></a>
+    <a href="/admin/clients">♙ <span>Клиенты</span></a>
+    <a href="/admin/channels">▣ <span>Каналы</span></a>
+    <a href="/client/channels">▹ <span>MILK TV</span></a>
+  </nav>
+  <div class="sidebar-user"><span class="avatar">A</span><span><b>admin</b><small>Администратор</small></span></div>
+</aside>
+
 <div class="container">
 
 <div class="header">
+<div class="header-main">
 <div class="logo">📺</div>
 <h1>IPTV Manager</h1>
 <div class="subtitle">Панель управления</div>
+</div>
+
+<a class="top-logout" href="/logout">🚪 Выйти</a>
 </div>
 
 <div class="status-card">
@@ -106,22 +171,16 @@ h1{margin:0;font-size:28px}
 <span>📡 IPTV сервер</span>
 <span class="online">🟢 Работает</span>
 </div>
+
+<div id="milktvSystemStatus">
+<div class="status-row"><span>❤️ HEALTH</span><span>…</span></div>
+<div class="status-row"><span>🤖 AUTOPILOT</span><span>…</span></div>
+<div class="status-row"><span>🏗️ INFRASTRUCTURE</span><span>…</span></div>
+<div class="status-row"><span>Последний Health</span><span>…</span></div>
+<div class="status-row"><span>Последний Autopilot</span><span>…</span></div>
+<div class="status-row"><span>ACTION REQUIRED</span><a id="actionRequiredLink" href="/admin/milktv">…</a></div>
+<div class="status-row"><span>Ручная диагностика</span><button id="healthNow" type="button">Проверить сейчас</button></div>
 </div>
-
-<div class="stats">
-
-<div class="stat">
-<div class="stat-icon">👥</div>
-<div class="stat-value" id="clientsCount">0</div>
-<div class="stat-title">Клиенты</div>
-</div>
-
-<div class="stat">
-<div class="stat-icon">📺</div>
-<div class="stat-value" id="channelsCount">0</div>
-<div class="stat-title">Каналы</div>
-</div>
-
 </div>
 
 <div class="menu">
@@ -129,7 +188,7 @@ h1{margin:0;font-size:28px}
 <a class="menu-button" href="/admin/clients">
 <div class="menu-icon">👥</div>
 <div class="menu-text">
-<div class="menu-title">Клиенты</div>
+<div class="menu-title">Клиенты <span id="clientsCount">0</span></div>
 <div class="menu-description">Добавление и управление клиентами</div>
 </div>
 <div class="menu-arrow">›</div>
@@ -147,49 +206,12 @@ h1{margin:0;font-size:28px}
 <a class="menu-button" href="/admin/channels">
 <div class="menu-icon">📺</div>
 <div class="menu-text">
-<div class="menu-title">Каналы</div>
+<div class="menu-title">Каналы <span id="channelsCount">0</span></div>
 <div class="menu-description">Управление IPTV-каналами</div>
 </div>
 <div class="menu-arrow">›</div>
 </a>
 
-<a class="menu-button" href="/channels">
-<div class="menu-icon">📡</div>
-<div class="menu-text">
-<div class="menu-title">Просмотр каналов</div>
-<div class="menu-description">Проверка IPTV-потоков</div>
-</div>
-<div class="menu-arrow">›</div>
-</a>
-
-<div class="menu-button">
-<div class="menu-icon">📱</div>
-<div class="menu-text">
-<div class="menu-title">Устройства</div>
-<div class="menu-description">Следующий этап</div>
-</div>
-</div>
-
-<div class="menu-button">
-<div class="menu-icon">📥</div>
-<div class="menu-text">
-<div class="menu-title">Импорт плейлистов</div>
-<div class="menu-description">Следующий этап</div>
-</div>
-</div>
-
-<div class="menu-button">
-<div class="menu-icon">⚙️</div>
-<div class="menu-text">
-<div class="menu-title">Настройки</div>
-<div class="menu-description">Следующий этап</div>
-</div>
-</div>
-
-</div>
-
-<div class="logout">
-<a href="/logout">🚪 Выйти</a>
 </div>
 
 <div class="footer">
@@ -216,6 +238,21 @@ async function loadStatistics(){
     console.error(error);
   }
 }
+
+async function loadMilktvSystemStatus(){
+  const box=document.getElementById("milktvSystemStatus");
+  try{
+    const [statusResponse,channelsResponse]=await Promise.all([fetch("/api/admin/milktv/health-status"),fetch("/api/admin/channels")]);
+    if(!statusResponse.ok)throw Error("status");
+    const status=await statusResponse.json(),channels=channelsResponse.ok?await channelsResponse.json():[];
+    const attention=channels.filter(c=>(Number(c.milktv_failed_checks||0)>=3||c.milktv_status==="quarantine")&&!c.has_usable_reserve).length;
+    const klass=value=>value==="ON"||value==="OK"?"online":value==="RUNNING"?"online":"";
+    const stamp=value=>value?new Date(value).toLocaleString():"—";
+    box.innerHTML=`<div class="status-row"><span>❤️ HEALTH</span><span class="${klass(status.health)}">${status.health||"—"}</span></div><div class="status-row"><span>🤖 AUTOPILOT</span><span class="${klass(status.autopilot?.state)}">${status.autopilot?.state||"—"}</span></div><div class="status-row"><span>🏗️ INFRASTRUCTURE</span><span class="${status.infra_degraded?"":"online"}">${status.infra_degraded?"🟠 Требует внимания":"🟢 OK"}</span></div><div class="status-row"><span>Последний Health</span><span>${stamp(status.last_run)}</span></div><div class="status-row"><span>Последний Autopilot</span><span>${stamp(status.autopilot?.last_run)}</span></div><div class="status-row"><span>ACTION REQUIRED</span><a class="${attention?"":"online"}" href="/admin/milktv">${attention}</a></div><div class="status-row"><span>Ручная диагностика</span><button id="healthNow" type="button">Проверить сейчас</button></div>`;
+    document.getElementById("healthNow").onclick=async event=>{event.target.disabled=true;try{const t=await (await fetch("/api/admin/csrf")).json();await fetch("/admin/milktv/check",{method:"POST",headers:{"X-CSRF-Token":t.token}});event.target.textContent="Запущено";}catch(_){event.target.textContent="Недоступно";}};
+  }catch(_){box.innerHTML='<div class="status-row"><span>❤️ HEALTH</span><span>Недоступен</span></div>';}
+}
+loadMilktvSystemStatus();
 loadStatistics();
 </script>
 

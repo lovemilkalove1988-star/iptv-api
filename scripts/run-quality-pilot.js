@@ -1,0 +1,2 @@
+const db=require('../database');const quality=require('../services/milktv-quality');
+(async()=>{const ff=await quality.checkFfprobeAvailability();if(ff.status!=='AVAILABLE'){console.log(`PILOT NOT STARTED - FFPROBE ${ff.status}`);return}console.log('Pilot requires explicit runtime source selection; no probes run by this harness.') ;await db.end()})().catch(e=>{console.error(e.message);process.exitCode=1});

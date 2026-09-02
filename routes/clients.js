@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../database");
+const { hashPassword } = require("../password-utils");
 
 
 // Список клиентов
@@ -33,18 +34,23 @@ try{
 const {
 name,
 phone,
-login
+login,
+password
 }=req.body;
+
+if (typeof password !== "string" || password.length === 0) {
+  return res.status(400).json({ error: "password is required" });
+}
 
 
 const result = await db.query(
 `
 INSERT INTO clients
-(name,phone,login,active)
-VALUES($1,$2,$3,true)
+(name,phone,login,password,active)
+VALUES($1,$2,$3,$4,true)
 RETURNING *
 `,
-[name,phone,login]
+[name,phone,login,hashPassword(password)]
 );
 
 

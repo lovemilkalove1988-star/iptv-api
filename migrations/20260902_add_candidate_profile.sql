@@ -1,0 +1,15 @@
+ALTER TABLE milktv_m3u_candidates ADD COLUMN IF NOT EXISTS profile_width INTEGER;
+ALTER TABLE milktv_m3u_candidates ADD COLUMN IF NOT EXISTS profile_height INTEGER;
+ALTER TABLE milktv_m3u_candidates ADD COLUMN IF NOT EXISTS profile_video_codec TEXT;
+ALTER TABLE milktv_m3u_candidates ADD COLUMN IF NOT EXISTS profile_video_bitrate BIGINT;
+ALTER TABLE milktv_m3u_candidates ADD COLUMN IF NOT EXISTS profile_fps NUMERIC;
+ALTER TABLE milktv_m3u_candidates ADD COLUMN IF NOT EXISTS profile_has_audio BOOLEAN;
+ALTER TABLE milktv_m3u_candidates ADD COLUMN IF NOT EXISTS profile_audio_codec TEXT;
+ALTER TABLE milktv_m3u_candidates ADD COLUMN IF NOT EXISTS profile_audio_bitrate BIGINT;
+ALTER TABLE milktv_m3u_candidates ADD COLUMN IF NOT EXISTS profile_stream_count INTEGER;
+ALTER TABLE milktv_m3u_candidates ADD COLUMN IF NOT EXISTS profile_format TEXT;
+ALTER TABLE milktv_m3u_candidates ADD COLUMN IF NOT EXISTS profile_checked_at TIMESTAMP WITHOUT TIME ZONE;
+ALTER TABLE milktv_m3u_candidates ADD COLUMN IF NOT EXISTS profile_error TEXT;
+ALTER TABLE milktv_m3u_candidates ADD COLUMN IF NOT EXISTS profile_confidence TEXT;
+ALTER TABLE milktv_m3u_candidates ADD COLUMN IF NOT EXISTS metadata_quality_mismatch BOOLEAN NOT NULL DEFAULT FALSE;
+CREATE INDEX IF NOT EXISTS milktv_m3u_candidates_profile_queue_idx ON milktv_m3u_candidates (profile_checked_at NULLS FIRST, id) WHERE match_confidence='high' AND health_status='online';

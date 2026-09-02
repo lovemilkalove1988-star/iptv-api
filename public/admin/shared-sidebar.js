@@ -1,0 +1,10 @@
+(function () {
+  if (document.querySelector('.app-sidebar')) return;
+  var style = document.createElement('style');
+  style.textContent = ':root{--admin-bg:#07101d;--admin-panel:#111d2b;--admin-border:#2a3d57;--admin-primary:#3d82e8;--admin-muted:#9aaac0}body{background:radial-gradient(circle at 20% 0%,#162b47 0%,var(--admin-bg) 48%,#050a12 100%)!important;color:#f3f6fb!important}@media(min-width:900px){body{padding-left:190px!important}.wrap,.container{max-width:1080px!important}}.app-sidebar{position:fixed;z-index:100;inset:16px auto 16px 16px;width:148px;display:flex;flex-direction:column;padding:16px 10px;background:#0a1320ee;border:1px solid var(--admin-border);border-radius:16px;box-shadow:0 14px 36px #0006}.app-sidebar .brand{font-size:17px;font-weight:700;color:#eaf2ff}.app-sidebar .brand b{color:#4d93f4}.app-sidebar .brand-mark{display:inline-grid;place-items:center;width:25px;height:25px;border-radius:7px;background:linear-gradient(135deg,#3d82e8,#62d2ff);color:#06111f}.app-sidebar nav{display:grid;gap:6px;margin-top:30px}.app-sidebar nav a{display:flex;gap:9px;align-items:center;padding:10px;border-radius:8px;color:var(--admin-muted);text-decoration:none;font-size:12px}.app-sidebar nav a:hover,.app-sidebar nav a.active{background:var(--admin-primary);color:#fff}.app-sidebar .sidebar-user{margin-top:auto;color:#dce7f7;font-size:11px}.app-sidebar .avatar{display:inline-grid;place-items:center;width:27px;height:27px;border-radius:50%;background:#5a8ed5;margin-right:6px}@media(max-width:899px){.app-sidebar{display:none}}';
+  document.head.appendChild(style);
+  var aside = document.createElement('aside');
+  aside.className = 'app-sidebar';
+  aside.innerHTML = '<div class="brand"><span class="brand-mark">▶</span> MILK <b>TV</b></div><nav><a href="/admin">⌂ <span>Главная</span></a><a href="/admin/clients">♙ <span>Клиенты</span></a><a href="/admin/channels">▣ <span>Каналы</span></a><a href="/client/channels">▹ <span>MILK TV</span></a></nav><div class="sidebar-user"><span class="avatar">A</span>admin</div>';
+  document.body.prepend(aside);
+}());

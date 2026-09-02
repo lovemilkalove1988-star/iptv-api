@@ -1,0 +1,435 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1">
+
+<title>Личный кабинет — МИЛК ТВ</title>
+
+<style>
+
+:root{--bg:#07101d;--panel:#111d2b;--panel-2:#172638;--border:#2a3d57;--text:#f3f6fb;--muted:#9aaac0;--primary:#3d82e8;--primary-hover:#5c9cf2;--success:#63d69b;--shadow:0 14px 32px rgba(0,0,0,.3)}
+
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  background:#090909;
+  color:#fff;
+  font-family:Arial,sans-serif;
+}
+
+.container{
+  width:100%;
+  max-width:700px;
+  margin:auto;
+  padding:16px;
+}
+
+.header{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:18px;
+}
+
+.logo{
+  font-size:32px;
+}
+
+.title{
+  font-size:22px;
+  font-weight:bold;
+}
+
+.subtitle{
+  color:#777;
+  font-size:12px;
+  margin-top:3px;
+}
+
+.logout{
+  margin-left:auto;
+  padding:8px 11px;
+  border:1px solid #333;
+  border-radius:9px;
+  background:#1c1c1c;
+  color:#aaa;
+  text-decoration:none;
+  font-size:12px;
+}
+
+.card{
+  background:#151515;
+  border:1px solid #292929;
+  border-radius:16px;
+  padding:18px;
+  margin-bottom:12px;
+}
+
+.card-title{
+  font-size:17px;
+  font-weight:bold;
+  margin-bottom:12px;
+}
+
+.status{
+  color:#35d05f;
+  font-weight:bold;
+}
+
+.info{
+  color:#aaa;
+  font-size:14px;
+  line-height:22px;
+}
+
+.value{
+  margin-top:8px;
+  padding:11px;
+  background:#0d0d0d;
+  border:1px solid #292929;
+  border-radius:9px;
+  word-break:break-all;
+  color:#7cff7c;
+  font-size:13px;
+}
+
+button{
+  width:100%;
+  margin-top:10px;
+  padding:12px;
+  border:1px solid #333;
+  border-radius:10px;
+  background:#252525;
+  color:#fff;
+  cursor:pointer;
+}
+
+button:hover{
+  background:#333;
+}
+
+.device{
+  padding:10px;
+  margin-top:8px;
+  background:#1c1c1c;
+  border-radius:9px;
+}
+
+.empty{
+  color:#777;
+}
+
+body{background:radial-gradient(circle at top,#172c47 0%,var(--bg) 52%,#050a12 100%);color:var(--text)}
+.container{max-width:760px;padding:20px 18px 32px}.card{background:var(--panel);border-color:var(--border);box-shadow:var(--shadow);padding:14px;border-radius:13px}.subtitle,.info,.empty{color:var(--muted)}
+.logout{background:var(--panel-2);border-color:var(--border);color:var(--muted)}button{background:var(--primary);border-color:var(--primary)}button:hover{background:var(--primary-hover)}.device{background:var(--panel-2);border:1px solid var(--border)}.value{background:#0b1523;border-color:var(--border);color:#8fc0ff}.mobile-nav{display:none}@media(max-width:640px){body{padding-bottom:72px}.mobile-nav{position:fixed;z-index:20;left:12px;right:12px;bottom:12px;display:flex;justify-content:space-around;padding:9px 8px;background:#101d2cee;border:1px solid var(--border);border-radius:14px;box-shadow:0 10px 26px #0007}.mobile-nav a{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:74px;color:var(--muted);text-decoration:none;font-size:18px}.mobile-nav a.active,.mobile-nav a:hover{color:#fff}.mobile-nav small{font-size:10px}}
+.header{padding:11px 12px;background:var(--panel);border:1px solid var(--border);border-radius:13px}.title{font-size:18px}.logo{font-size:25px}.profile-hint{display:flex;justify-content:space-between;align-items:center;margin-top:8px;color:var(--muted);font-size:11px}.profile-hint span{font-size:18px;color:#dbe8f8}
+@media(max-width:640px){.container{max-width:420px;padding:12px 12px 82px}.header{position:sticky;top:8px;z-index:10;margin-bottom:12px}.card-title{font-size:14px}.card{margin-bottom:9px;padding:13px}.value{padding:9px}.device{padding:9px}}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="header">
+
+<div class="logo">📺</div>
+
+<div>
+
+<div class="title">
+МИЛК ТВ
+</div>
+
+<div class="subtitle">
+Личный кабинет
+</div>
+
+</div>
+
+<a
+  class="logout"
+  href="/client/logout"
+>
+🚪 Выйти
+</a>
+
+</div>
+
+
+<div class="card">
+
+<div class="card-title">
+👤 Мой профиль
+</div>
+
+<div class="info">
+
+Имя:
+
+<div
+  class="value"
+  id="clientName"
+>
+Загрузка...
+</div>
+
+<div class="profile-hint">Аккаунт клиента <span>›</span></div>
+
+</div>
+
+</div>
+
+
+<div class="card">
+
+<div class="card-title">
+📺 Доступ к МИЛК ТВ
+</div>
+
+<div class="info">
+
+Статус:
+
+<div
+  class="value status"
+  id="clientStatus"
+>
+Проверка...
+</div>
+
+<br>
+
+Оплачено до:
+
+<div
+  class="value"
+  id="paidUntil"
+>
+Пока без ограничения
+</div>
+
+</div>
+
+</div>
+
+
+<div class="card">
+
+<div class="card-title">
+💰 Баланс
+</div>
+
+<div
+  class="value"
+  id="balance"
+>
+0 ₸
+</div>
+
+</div>
+
+
+<div class="card">
+
+<div class="card-title">
+🔗 Моя IPTV-ссылка
+</div>
+
+<div class="info">
+Используйте эту ссылку для подключения IPTV.
+</div>
+
+<div
+  class="value"
+  id="playlistUrl"
+>
+Загрузка...
+</div>
+
+<button
+  type="button"
+  onclick="copyPlaylist()"
+>
+📋 Скопировать ссылку
+</button>
+
+</div>
+
+
+<div class="card">
+
+<div class="card-title">
+📱 Мои устройства
+</div>
+
+<div id="devices">
+
+<div class="empty">
+Загрузка...
+</div>
+
+</div>
+
+</div>
+
+
+<div class="card">
+
+<div class="card-title">
+📖 Подключение
+</div>
+
+<div class="info">
+
+Здесь позже появятся подробные инструкции
+по подключению МИЛК ТВ на телевизоре,
+телефоне и других устройствах.
+
+</div>
+
+</div>
+
+
+</div>
+
+
+<script>
+
+let playlistUrl = "";
+
+async function loadCabinet(){
+
+  try{
+
+    const response =
+      await fetch("/api/client/cabinet");
+
+    const data =
+      await response.json();
+
+    if(!response.ok || !data.success){
+
+      throw new Error(
+        data.error ||
+        "Ошибка загрузки кабинета"
+      );
+
+    }
+
+    document.getElementById("clientName")
+      .textContent =
+        data.client.name || "Клиент";
+
+    document.getElementById("clientStatus")
+      .textContent =
+        data.client.active
+          ? "🟢 Активен"
+          : "🔴 Заблокирован";
+
+    document.getElementById("balance")
+      .textContent =
+        Number(data.client.balance || 0) + " ₸";
+
+    playlistUrl =
+      data.playlist_url || "";
+
+    document.getElementById("playlistUrl")
+      .textContent =
+        playlistUrl || "Ссылка отсутствует";
+
+    const devices =
+      document.getElementById("devices");
+
+    devices.innerHTML = "";
+
+    if(!data.devices || !data.devices.length){
+
+      devices.innerHTML =
+        '<div class="empty">Устройств пока нет</div>';
+
+      return;
+
+    }
+
+    data.devices.forEach(device => {
+
+      const item =
+        document.createElement("div");
+
+      item.className =
+        "device";
+
+      item.textContent =
+        "📱 " +
+        (device.device_name || "Устройство");
+
+      devices.appendChild(item);
+
+    });
+
+  }catch(error){
+
+    console.error(error);
+
+    document.getElementById("clientName")
+      .textContent =
+        "Не удалось загрузить";
+
+    document.getElementById("clientStatus")
+      .textContent =
+        "Ошибка";
+
+  }
+
+}
+
+
+async function copyPlaylist(){
+
+  if(!playlistUrl){
+
+    alert("IPTV-ссылка отсутствует");
+
+    return;
+
+  }
+
+  try{
+
+    await navigator.clipboard.writeText(
+      playlistUrl
+    );
+
+    alert("Ссылка скопирована");
+
+  }catch(error){
+
+    alert(
+      "Не удалось скопировать ссылку"
+    );
+
+  }
+
+}
+
+
+loadCabinet();
+
+document.body.insertAdjacentHTML('beforeend','<nav class="mobile-nav" aria-label="Навигация кабинета"><a href="/client/channels">⌂<small>Главная</small></a><a href="/client/channels">☷<small>Плейлисты</small></a><a class="active" href="/client">◉<small>Профиль</small></a></nav>');
+
+</script>
+
+</body>
+
+</html>
